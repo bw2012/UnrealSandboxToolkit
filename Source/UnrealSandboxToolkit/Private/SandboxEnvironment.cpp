@@ -35,7 +35,7 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 
 void ASandboxEnvironment::PerformDayNightCycle() {
 	UWorld* World = GetWorld();
-	AGameState* GameState = World->GetGameState();
+	AGameStateBase* GameState = World->GetGameState();
 
 	if (GameState == NULL) {
 		return;
