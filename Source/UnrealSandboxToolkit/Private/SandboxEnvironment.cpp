@@ -8,10 +8,13 @@
 ASandboxEnvironment::ASandboxEnvironment() {
 	PrimaryActorTick.bCanEverTick = true;
 	TimeScale = 1.f;
+	TimeSpeed = 10.f;
 	MaxSkyLigthIntensity = 1.0;
 	NightSkyLigthIntensity = 0.01;
 	LastSkyIntensity = 0;
 	RecaptureSkyTreshold = 0.5f;
+
+	bEnableDayNightCycle = true;
 }
 
 void ASandboxEnvironment::BeginPlay() {
@@ -25,6 +28,12 @@ void ASandboxEnvironment::BeginPlay() {
 void ASandboxEnvironment::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
 
+	if(bEnableDayNightCycle) {
+		PerformDayNightCycle();
+	}
+}
+
+void ASandboxEnvironment::PerformDayNightCycle() {
 	UWorld* World = GetWorld();
 	AGameState* GameState = World->GetGameState();
 
@@ -53,7 +62,8 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 			if (LightComponent != NULL) {
 				if (SunHeightFloatVal > 0.01) { //0.08 if mobile (2.75)
 					LightComponent->SetIntensity(1.75 + 2 * SunHeightFloatVal);
-				} else {
+				}
+				else {
 					LightComponent->SetIntensity(0);
 				}
 			}
@@ -81,7 +91,7 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 
 
 float ASandboxEnvironment::ClcGameTime(float RealServerTime) {
-	return ((RealServerTime)* 10.0f) + TimeOffset;
+	return ((RealServerTime)* TimeSpeed) + TimeOffset;
 }
 
 

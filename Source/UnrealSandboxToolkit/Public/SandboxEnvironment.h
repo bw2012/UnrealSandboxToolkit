@@ -39,6 +39,9 @@ public:
 	float TimeScale;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	float TimeSpeed;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float MaxSkyLigthIntensity;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
@@ -46,6 +49,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float RecaptureSkyTreshold;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
+	bool bEnableDayNightCycle;
 
 	float ClcGameTime(float RealServerTime);
 
@@ -61,5 +67,7 @@ private:
 	float LastSkyIntensity;
 
 	float TimeOffset = 0;
+
+	void PerformDayNightCycle();
 	
 };
