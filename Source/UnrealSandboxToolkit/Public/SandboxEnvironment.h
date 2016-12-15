@@ -27,13 +27,13 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	ADirectionalLight* directionalLightSource;
+	ADirectionalLight* DirectionalLightSource;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	AActor* skySphere;
+	AActor* SkySphere;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	ASkyLight* skyLight;
+	ASkyLight* SkyLight;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float TimeScale;
@@ -47,11 +47,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float RecaptureSkyTreshold;
 
-	float clcGameTime(float real_server_time);
+	float ClcGameTime(float RealServerTime);
 
-	SandboxGameTime clcLocalGameTime(float real_server_time);
+	SandboxGameTime ClcLocalGameTime(float RealServerTime);
 
-	SandboxGameTime clcGameTimeOfDay(float real_server_time);
+	SandboxGameTime ClcGameTimeOfDay(float RealServerTime);
 
 	void SandboxSetTimeOffset(float time);
 

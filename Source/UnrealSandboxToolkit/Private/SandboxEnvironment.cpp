@@ -17,8 +17,8 @@ ASandboxEnvironment::ASandboxEnvironment() {
 void ASandboxEnvironment::BeginPlay() {
 	Super::BeginPlay();
 	
-	if (directionalLightSource != NULL && skySphere != NULL){
-		directionalLightSource->SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
+	if (DirectionalLightSource != NULL && SkySphere != NULL){
+		DirectionalLightSource->SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	}
 }
 
@@ -32,25 +32,25 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 		return;
 	}
 
-	float local_time = clcGameTime(gameState->GetServerWorldTimeSeconds()) * TimeScale;
+	float local_time = ClcGameTime(gameState->GetServerWorldTimeSeconds()) * TimeScale;
 
 	float delta = local_time - last_time;
 	last_time = local_time;
 
 	float offset = (180.0f / (60.0f * 60.0f * 12.0f)) * delta;
 
-	if (directionalLightSource != NULL && skySphere != NULL) {
+	if (DirectionalLightSource != NULL && SkySphere != NULL) {
 		FRotator myRotationValue = FRotator(0.0f, offset, 0.0f); //yaw
-		directionalLightSource->AddActorLocalRotation(myRotationValue);
+		DirectionalLightSource->AddActorLocalRotation(myRotationValue);
 
 		FOutputDeviceNull ar;
-		skySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), ar, NULL, true);
+		SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), ar, NULL, true);
 
-		UFloatProperty* sunHeightFloatProp = FindField<UFloatProperty>(skySphere->GetClass(), TEXT("Sun Height"));
+		UFloatProperty* sunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
 		if (sunHeightFloatProp != NULL) {
-			float sunHeightFloatVal = sunHeightFloatProp->GetPropertyValue_InContainer(skySphere);
+			float sunHeightFloatVal = sunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
 
-			ULightComponent* l = directionalLightSource->GetLightComponent();
+			ULightComponent* l = DirectionalLightSource->GetLightComponent();
 			if (l != NULL) {
 				if (sunHeightFloatVal > 0.01) { //0.08 if mobile
 												// 2.75
@@ -61,9 +61,9 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 				}
 			}
 
-			if (skyLight != NULL) {
+			if (SkyLight != NULL) {
 				// set sky light intensity
-				USkyLightComponent* slc = skyLight->GetLightComponent();
+				USkyLightComponent* slc = SkyLight->GetLightComponent();
 				if (slc != NULL) {
 					if (sunHeightFloatVal > 0) {
 						slc->Intensity = 0.04 + MaxSkyLigthIntensity * sunHeightFloatVal;
@@ -86,13 +86,13 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 }
 
 
-float ASandboxEnvironment::clcGameTime(float real_server_time) {
-	return ((real_server_time)* 10.0f) + time_offset;
+float ASandboxEnvironment::ClcGameTime(float RealServerTime) {
+	return ((RealServerTime)* 10.0f) + time_offset;
 }
 
 
-SandboxGameTime ASandboxEnvironment::clcLocalGameTime(float real_server_time) {
-	long input_seconds = (long)(clcGameTime(real_server_time));
+SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
+	long input_seconds = (long)(ClcGameTime(RealServerTime));
 
 	const int cseconds_in_day = 86400;
 	const int cseconds_in_hour = 3600;
@@ -108,8 +108,8 @@ SandboxGameTime ASandboxEnvironment::clcLocalGameTime(float real_server_time) {
 	return ret;
 }
 
-SandboxGameTime ASandboxEnvironment::clcGameTimeOfDay(float real_server_time) {
-	long input_seconds = (int)(clcGameTime(real_server_time) + 60 * 60 * 12);
+SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
+	long input_seconds = (int)(ClcGameTime(RealServerTime) + 60 * 60 * 12);
 
 	time_t rawtime = (time_t)input_seconds;
 
@@ -125,7 +125,7 @@ SandboxGameTime ASandboxEnvironment::clcGameTimeOfDay(float real_server_time) {
 }
 
 
-void ASandboxEnvironment::SandboxSetTimeOffset(float offset) {
-	time_offset = offset;
+void ASandboxEnvironment::SandboxSetTimeOffset(float Offset) {
+	time_offset = Offset;
 }
 
