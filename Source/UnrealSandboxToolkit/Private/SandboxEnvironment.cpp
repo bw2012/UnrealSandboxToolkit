@@ -25,62 +25,56 @@ void ASandboxEnvironment::BeginPlay() {
 void ASandboxEnvironment::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
 
-	UWorld* world = GetWorld();
-	AGameState* gameState = world->GetGameState();
+	UWorld* World = GetWorld();
+	AGameState* GameState = World->GetGameState();
 
-	if (gameState == NULL) {
+	if (GameState == NULL) {
 		return;
 	}
 
-	float local_time = ClcGameTime(gameState->GetServerWorldTimeSeconds()) * TimeScale;
+	float LocalTime = ClcGameTime(GameState->GetServerWorldTimeSeconds()) * TimeScale;
 
-	float delta = local_time - LastTime;
-	LastTime = local_time;
+	float Delta = LocalTime - LastTime;
+	LastTime = LocalTime;
 
-	float offset = (180.0f / (60.0f * 60.0f * 12.0f)) * delta;
+	float Offset = (180.0f / (60.0f * 60.0f * 12.0f)) * Delta;
 
 	if (DirectionalLightSource != NULL && SkySphere != NULL) {
-		FRotator myRotationValue = FRotator(0.0f, offset, 0.0f); //yaw
-		DirectionalLightSource->AddActorLocalRotation(myRotationValue);
+		DirectionalLightSource->AddActorLocalRotation(FRotator(0.0f, Offset, 0.0f)); //yaw
 
-		FOutputDeviceNull ar;
-		SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), ar, NULL, true);
+		FOutputDeviceNull Ar;
+		SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), Ar, NULL, true);
 
-		UFloatProperty* sunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
-		if (sunHeightFloatProp != NULL) {
-			float sunHeightFloatVal = sunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
+		UFloatProperty* SunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
+		if (SunHeightFloatProp != NULL) {
+			float SunHeightFloatVal = SunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
 
-			ULightComponent* l = DirectionalLightSource->GetLightComponent();
-			if (l != NULL) {
-				if (sunHeightFloatVal > 0.01) { //0.08 if mobile
-												// 2.75
-					l->SetIntensity(1.75 + 2 * sunHeightFloatVal);
-				}
-				else {
-					l->SetIntensity(0);
+			ULightComponent* LightComponent = DirectionalLightSource->GetLightComponent();
+			if (LightComponent != NULL) {
+				if (SunHeightFloatVal > 0.01) { //0.08 if mobile (2.75)
+					LightComponent->SetIntensity(1.75 + 2 * SunHeightFloatVal);
+				} else {
+					LightComponent->SetIntensity(0);
 				}
 			}
 
 			if (SkyLight != NULL) {
 				// set sky light intensity
-				USkyLightComponent* slc = SkyLight->GetLightComponent();
-				if (slc != NULL) {
-					if (sunHeightFloatVal > 0) {
-						slc->Intensity = 0.04 + MaxSkyLigthIntensity * sunHeightFloatVal;
+				USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
+				if (SkyLightComponent != NULL) {
+					if (SunHeightFloatVal > 0) {
+						SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeightFloatVal;
 					}
 					else {
-						slc->Intensity = NightSkyLigthIntensity; //night
+						SkyLightComponent->Intensity = NightSkyLigthIntensity; //night
 					}
 
-					if (FMath::Abs(slc->Intensity - LastSkyIntensity) > RecaptureSkyTreshold) {
-						slc->RecaptureSky();
-						LastSkyIntensity = slc->Intensity;
+					if (FMath::Abs(SkyLightComponent->Intensity - LastSkyIntensity) > RecaptureSkyTreshold) {
+						SkyLightComponent->RecaptureSky();
+						LastSkyIntensity = SkyLightComponent->Intensity;
 					}
 				}
 			}
-
-
-
 		}
 	}
 }
