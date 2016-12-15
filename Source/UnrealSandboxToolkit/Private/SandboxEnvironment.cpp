@@ -10,7 +10,7 @@ ASandboxEnvironment::ASandboxEnvironment() {
 	TimeScale = 1.f;
 	MaxSkyLigthIntensity = 1.0;
 	NightSkyLigthIntensity = 0.01;
-	last_sky_intensity = 0;
+	LastSkyIntensity = 0;
 	RecaptureSkyTreshold = 0.5f;
 }
 
@@ -34,8 +34,8 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 
 	float local_time = ClcGameTime(gameState->GetServerWorldTimeSeconds()) * TimeScale;
 
-	float delta = local_time - last_time;
-	last_time = local_time;
+	float delta = local_time - LastTime;
+	LastTime = local_time;
 
 	float offset = (180.0f / (60.0f * 60.0f * 12.0f)) * delta;
 
@@ -72,9 +72,9 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 						slc->Intensity = NightSkyLigthIntensity; //night
 					}
 
-					if (FMath::Abs(slc->Intensity - last_sky_intensity) > RecaptureSkyTreshold) {
+					if (FMath::Abs(slc->Intensity - LastSkyIntensity) > RecaptureSkyTreshold) {
 						slc->RecaptureSky();
-						last_sky_intensity = slc->Intensity;
+						LastSkyIntensity = slc->Intensity;
 					}
 				}
 			}
@@ -87,7 +87,7 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 
 
 float ASandboxEnvironment::ClcGameTime(float RealServerTime) {
-	return ((RealServerTime)* 10.0f) + time_offset;
+	return ((RealServerTime)* 10.0f) + TimeOffset;
 }
 
 
@@ -126,6 +126,6 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
 
 
 void ASandboxEnvironment::SandboxSetTimeOffset(float Offset) {
-	time_offset = Offset;
+	TimeOffset = Offset;
 }
 

@@ -56,10 +56,10 @@ public:
 	void SandboxSetTimeOffset(float time);
 
 private:
-	float last_time;
+	float LastTime;
 
-	float last_sky_intensity;
+	float LastSkyIntensity;
 
-	float time_offset = 0;
+	float TimeOffset = 0;
 	
 };
