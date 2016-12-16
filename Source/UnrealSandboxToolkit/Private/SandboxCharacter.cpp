@@ -23,7 +23,7 @@ ASandboxCharacter::ASandboxCharacter() {
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(GetCapsuleComponent());
-	FirstPersonCamera->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
+	FirstPersonCamera->RelativeLocation = FVector(30.4f, 1.75f, 64.f); // Position the camera
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
 	// initial view
@@ -117,6 +117,8 @@ void ASandboxCharacter::initTopDownView() {
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
 
+	bUseControllerRotationYaw = false;
+
 	view = PlayerView::TOP_DOWN;
 
 	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
@@ -141,6 +143,8 @@ void ASandboxCharacter::initThirdPersonView() {
 
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
+
+	bUseControllerRotationYaw = false;
 
 	view = PlayerView::THIRD_PERSON;
 
@@ -211,8 +215,7 @@ void ASandboxCharacter::MoveForward(float Value) {
 	if (controller == NULL) { return; }
 
 	if (view == PlayerView::THIRD_PERSON) {
-		if (Value != 0.0f)
-		{
+		if (Value != 0.0f)	{
 			// find out which way is forward
 			const FRotator Rotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -224,10 +227,9 @@ void ASandboxCharacter::MoveForward(float Value) {
 	}
 
 	if (view == PlayerView::FIRST_PERSON) {
-		if (Value != 0.0f)
-		{
+		if (Value != 0.0f)	{
 			// add movement in that direction
-			AddMovementInput(GetActorRightVector(), Value);
+			AddMovementInput(GetActorForwardVector(), Value);
 		}
 	}
 }
@@ -237,8 +239,7 @@ void ASandboxCharacter::MoveRight(float Value) {
 	if (controller == NULL) { return; }
 
 	if (view == PlayerView::THIRD_PERSON) {
-		if (Value != 0.0f)
-		{
+		if (Value != 0.0f) {
 			// find out which way is right
 			const FRotator Rotation = Controller->GetControlRotation();
 			const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -251,8 +252,7 @@ void ASandboxCharacter::MoveRight(float Value) {
 	}
 
 	if (view == PlayerView::FIRST_PERSON) {
-		if (Value != 0.0f)
-		{
+		if (Value != 0.0f) {
 			// add movement in that direction
 			AddMovementInput(GetActorRightVector(), Value);
 		}
