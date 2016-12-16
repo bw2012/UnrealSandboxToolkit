@@ -37,6 +37,9 @@ public:
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UCameraComponent* FirstPersonCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -44,6 +47,8 @@ public:
 	void initTopDownView();
 
 	void initThirdPersonView();
+
+	void initFirstPersonView();
 
 	PlayerView GetSandboxPlayerView();
 

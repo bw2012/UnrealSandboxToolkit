@@ -17,6 +17,14 @@ ASandboxCharacter::ASandboxCharacter() {
 	CameraBoom->AttachTo(RootComponent);
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
+	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
+
+	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
+	FirstPersonCamera->SetupAttachment(GetCapsuleComponent());
+	FirstPersonCamera->RelativeLocation = FVector(-39.56f, 1.75f, 64.f); // Position the camera
+	FirstPersonCamera->bUsePawnControlRotation = true;
 
 	// initial view
 	view = PlayerView::TOP_DOWN;
@@ -40,7 +48,7 @@ void ASandboxCharacter::BeginPlay() {
 	}
 
 	if (InitialView == PlayerView::FIRST_PERSON) {
-		initThirdPersonView();
+		initFirstPersonView();
 	}
 }
 
@@ -106,10 +114,8 @@ void ASandboxCharacter::initTopDownView() {
 	CameraBoom->ProbeSize = 0;
 	CameraBoom->RelativeLocation = FVector(0, 0, 0);
 
-	//FollowCamera->DetachFromParent();
-	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
+	FirstPersonCamera->Deactivate();
+	FollowCamera->Activate();
 
 	view = PlayerView::TOP_DOWN;
 
@@ -133,12 +139,30 @@ void ASandboxCharacter::initThirdPersonView() {
 	CameraBoom->ProbeSize = 12;
 	CameraBoom->RelativeLocation = FVector(40, 30, 64);
 
-	FollowCamera->DetachFromParent();
-	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
+	FirstPersonCamera->Deactivate();
+	FollowCamera->Activate();
 
 	view = PlayerView::THIRD_PERSON;
+
+	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
+	if (controller != NULL) {
+		controller->ShowMouseCursor(false);
+	}
+}
+
+void ASandboxCharacter::initFirstPersonView() {
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...
+	GetCharacterMovement()->JumpZVelocity = 600.f;
+	GetCharacterMovement()->AirControl = 0.2f;
+
+	FirstPersonCamera->Activate();
+	FollowCamera->Deactivate();
+
+	bUseControllerRotationYaw = true;
+
+	view = PlayerView::FIRST_PERSON;
 
 	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
 	if (controller != NULL) {
