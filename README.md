@@ -9,7 +9,7 @@ Unreal Engine 4 quick start toolkit
 
 # Features
 * day/night cycle
-* character third-person/top-down runtime change
+* character firstperson/third-person/top-down runtime change
 
 
 # License
