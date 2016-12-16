@@ -100,13 +100,13 @@ void ASandboxPlayerController::ToggleView() {
 	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
 
 	if (pawn->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
-		pawn->initThirdPersonView();
+		pawn->InitThirdPersonView();
 		bShowMouseCursor = false;
 
 		//hud->openTpvHud();
 		//disableZCut();
 	} else if (pawn->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
-		pawn->initTopDownView();
+		pawn->InitTopDownView();
 		bShowMouseCursor = true;
 
 		//hud->closeTpvHud();

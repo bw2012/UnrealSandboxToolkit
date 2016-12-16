@@ -44,11 +44,11 @@ public:
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
-	void initTopDownView();
+	void InitTopDownView();
 
-	void initThirdPersonView();
+	void InitThirdPersonView();
 
-	void initFirstPersonView();
+	void InitFirstPersonView();
 
 	PlayerView GetSandboxPlayerView();
 
@@ -58,7 +58,7 @@ public:
 	PlayerView InitialView = PlayerView::TOP_DOWN;
 
 private:
-	PlayerView view;
+	PlayerView CurrentPlayerView;
 
 protected:
 	void ZoomIn();

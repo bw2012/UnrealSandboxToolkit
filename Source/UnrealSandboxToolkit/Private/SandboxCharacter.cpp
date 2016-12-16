@@ -27,8 +27,8 @@ ASandboxCharacter::ASandboxCharacter() {
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
 	// initial view
-	view = PlayerView::TOP_DOWN;
-	initTopDownView();
+	CurrentPlayerView = PlayerView::TOP_DOWN;
+	InitTopDownView();
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
@@ -37,18 +37,18 @@ ASandboxCharacter::ASandboxCharacter() {
 void ASandboxCharacter::BeginPlay() {
 	Super::BeginPlay();
 	
-	view = InitialView;
+	CurrentPlayerView = InitialView;
 
 	if (InitialView == PlayerView::TOP_DOWN) {
-		initTopDownView();
+		InitTopDownView();
 	}
 
 	if (InitialView == PlayerView::THIRD_PERSON) {
-		initThirdPersonView();
+		InitThirdPersonView();
 	}
 
 	if (InitialView == PlayerView::FIRST_PERSON) {
-		initFirstPersonView();
+		InitFirstPersonView();
 	}
 }
 
@@ -97,7 +97,7 @@ void ASandboxCharacter::ZoomOut() {
 	UE_LOG(LogTemp, Warning, TEXT("ZoomOut: %f"), GetCameraBoom()->TargetArmLength);
 }
 
-void ASandboxCharacter::initTopDownView() {
+void ASandboxCharacter::InitTopDownView() {
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
@@ -119,7 +119,7 @@ void ASandboxCharacter::initTopDownView() {
 
 	bUseControllerRotationYaw = false;
 
-	view = PlayerView::TOP_DOWN;
+	CurrentPlayerView = PlayerView::TOP_DOWN;
 
 	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
 	if (controller != NULL) {
@@ -127,7 +127,7 @@ void ASandboxCharacter::initTopDownView() {
 	}
 }
 
-void ASandboxCharacter::initThirdPersonView() {
+void ASandboxCharacter::InitThirdPersonView() {
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
@@ -146,7 +146,7 @@ void ASandboxCharacter::initThirdPersonView() {
 
 	bUseControllerRotationYaw = false;
 
-	view = PlayerView::THIRD_PERSON;
+	CurrentPlayerView = PlayerView::THIRD_PERSON;
 
 	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
 	if (controller != NULL) {
@@ -154,7 +154,7 @@ void ASandboxCharacter::initThirdPersonView() {
 	}
 }
 
-void ASandboxCharacter::initFirstPersonView() {
+void ASandboxCharacter::InitFirstPersonView() {
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...
@@ -166,7 +166,7 @@ void ASandboxCharacter::initFirstPersonView() {
 
 	bUseControllerRotationYaw = true;
 
-	view = PlayerView::FIRST_PERSON;
+	CurrentPlayerView = PlayerView::FIRST_PERSON;
 
 	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
 	if (controller != NULL) {
@@ -177,7 +177,7 @@ void ASandboxCharacter::initFirstPersonView() {
 void ASandboxCharacter::AddControllerYawInput(float Val) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
-	if (view == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	Super::AddControllerYawInput(Val);
 
@@ -186,7 +186,7 @@ void ASandboxCharacter::AddControllerYawInput(float Val) {
 void ASandboxCharacter::AddControllerPitchInput(float Val) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
-	if (view == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	Super::AddControllerPitchInput(Val);
 }
@@ -194,7 +194,7 @@ void ASandboxCharacter::AddControllerPitchInput(float Val) {
 void ASandboxCharacter::TurnAtRate(float Rate) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
-	if (view == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	// calculate delta for this frame from the rate information
 	//AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
@@ -203,7 +203,7 @@ void ASandboxCharacter::TurnAtRate(float Rate) {
 void ASandboxCharacter::LookUpAtRate(float Rate) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
-	if (view == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	// calculate delta for this frame from the rate information
 	//AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
@@ -214,7 +214,7 @@ void ASandboxCharacter::MoveForward(float Value) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
 
-	if (view == PlayerView::THIRD_PERSON) {
+	if (CurrentPlayerView == PlayerView::THIRD_PERSON) {
 		if (Value != 0.0f)	{
 			// find out which way is forward
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -226,7 +226,7 @@ void ASandboxCharacter::MoveForward(float Value) {
 		}
 	}
 
-	if (view == PlayerView::FIRST_PERSON) {
+	if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
 		if (Value != 0.0f)	{
 			// add movement in that direction
 			AddMovementInput(GetActorForwardVector(), Value);
@@ -238,7 +238,7 @@ void ASandboxCharacter::MoveRight(float Value) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
 
-	if (view == PlayerView::THIRD_PERSON) {
+	if (CurrentPlayerView == PlayerView::THIRD_PERSON) {
 		if (Value != 0.0f) {
 			// find out which way is right
 			const FRotator Rotation = Controller->GetControlRotation();
@@ -251,7 +251,7 @@ void ASandboxCharacter::MoveRight(float Value) {
 		}
 	}
 
-	if (view == PlayerView::FIRST_PERSON) {
+	if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
 		if (Value != 0.0f) {
 			// add movement in that direction
 			AddMovementInput(GetActorRightVector(), Value);
@@ -260,9 +260,9 @@ void ASandboxCharacter::MoveRight(float Value) {
 }
 
 PlayerView ASandboxCharacter::GetSandboxPlayerView() {
-	return view;
+	return CurrentPlayerView;
 }
 
 void ASandboxCharacter::SetSandboxPlayerView(PlayerView SandboxView) {
-	view = SandboxView;
+	CurrentPlayerView = SandboxView;
 }
