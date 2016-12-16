@@ -2,15 +2,13 @@
 
 #include "UnrealSandboxToolkitPrivatePCH.h"
 #include "SandboxCharacter.h"
+#include "SandboxPlayerController.h"
 
 
-// Sets default values
-ASandboxCharacter::ASandboxCharacter()
-{
-	// Set size for player capsule
+ASandboxCharacter::ASandboxCharacter() {
+
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -20,32 +18,37 @@ ASandboxCharacter::ASandboxCharacter()
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 
+	// initial view
 	view = PlayerView::TOP_DOWN;
 	initTopDownView();
 
-	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
-
 }
 
-// Called when the game starts or when spawned
-void ASandboxCharacter::BeginPlay()
-{
+void ASandboxCharacter::BeginPlay() {
 	Super::BeginPlay();
 	
+	view = InitialView;
+
+	if (InitialView == PlayerView::TOP_DOWN) {
+		initTopDownView();
+	}
+
+	if (InitialView == PlayerView::THIRD_PERSON) {
+		initThirdPersonView();
+	}
+
+	if (InitialView == PlayerView::FIRST_PERSON) {
+		initThirdPersonView();
+	}
 }
 
-// Called every frame
-void ASandboxCharacter::Tick( float DeltaTime )
-{
+void ASandboxCharacter::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
-
 }
 
-// Called to bind functionality to input
-void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent)
-{
+void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent) {
 	Super::SetupPlayerInputComponent(InputComponent);
 
 	InputComponent->BindAction("ZoomIn", IE_Released, this, &ASandboxCharacter::ZoomIn);
@@ -107,6 +110,13 @@ void ASandboxCharacter::initTopDownView() {
 	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
+
+	view = PlayerView::TOP_DOWN;
+
+	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
+	if (controller != NULL) {
+		controller->ShowMouseCursor(true);
+	}
 }
 
 void ASandboxCharacter::initThirdPersonView() {
@@ -127,8 +137,14 @@ void ASandboxCharacter::initThirdPersonView() {
 	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
-}
 
+	view = PlayerView::THIRD_PERSON;
+
+	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
+	if (controller != NULL) {
+		controller->ShowMouseCursor(false);
+	}
+}
 
 void ASandboxCharacter::AddControllerYawInput(float Val) {
 	AController* controller = (AController*)GetController();
@@ -217,4 +233,12 @@ void ASandboxCharacter::MoveRight(float Value) {
 			AddMovementInput(GetActorRightVector(), Value);
 		}
 	}
+}
+
+PlayerView ASandboxCharacter::GetSandboxPlayerView() {
+	return view;
+}
+
+void ASandboxCharacter::SetSandboxPlayerView(PlayerView SandboxView) {
+	view = SandboxView;
 }

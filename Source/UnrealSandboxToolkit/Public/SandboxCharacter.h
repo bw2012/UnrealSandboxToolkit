@@ -6,20 +6,19 @@
 #include "GameFramework/Character.h"
 #include "SandboxCharacter.generated.h"
 
-enum PlayerView {
-	TOP_DOWN,
-	THIRD_PERSON,
-	FIRST_PERSON
-};
 
-class AMainPlayerController;
+
+UENUM(BlueprintType)
+enum class PlayerView : uint8 {
+	TOP_DOWN = 0		UMETA(DisplayName = "Top Down"),
+	THIRD_PERSON = 1	UMETA(DisplayName = "Third Person"),
+	FIRST_PERSON = 2	UMETA(DisplayName = "First Person")
+};
 
 UCLASS()
 class UNREALSANDBOXTOOLKIT_API ASandboxCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	friend class AMainPlayerController;
 
 public:
 	// Sets default values for this character's properties
@@ -46,6 +45,14 @@ public:
 
 	void initThirdPersonView();
 
+	PlayerView GetSandboxPlayerView();
+
+	void SetSandboxPlayerView(PlayerView SandboxView);
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox")
+	PlayerView InitialView = PlayerView::TOP_DOWN;
+
+private:
 	PlayerView view;
 
 protected:
