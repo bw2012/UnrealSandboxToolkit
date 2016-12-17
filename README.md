@@ -8,7 +8,7 @@ Unreal Engine 4 quick start toolkit
 
 
 # Features
-* day/night cycle
+* day/night cycle (with real sun position according geo location, time and time zone)
 * character first-person/third-person/top-down runtime change
 
 
