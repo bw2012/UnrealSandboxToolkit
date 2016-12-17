@@ -10,7 +10,7 @@ Tested with Unreal Engine 4.14.1
 
 
 # Current features
-* day/night cycle (with real sun position according geo location, time and time zone)
+* day/night cycle (real sun position according geo location and time)
 * character first-person/third-person/top-down runtime change
 
 
