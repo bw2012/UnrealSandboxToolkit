@@ -47,9 +47,9 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 		return;
 	}
 
-	SandboxGameTime GameTimeOfDay = ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds());
+	SandboxGameTime GameTimeOfDay = ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds(), false); // use UTC time
 
-	//UE_LOG(LogTemp, Warning, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
+	//sUE_LOG(LogTemp, Warning, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
 
 	cTime Time;
 	Time.iYear = InitialYear;
@@ -131,9 +131,11 @@ SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
 	return ret;
 }
 
-SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
+SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool bAccordingTimeZone) {
 	static const long InitialOffset = 60 * 60 * 12; // always start game at 12:00
-	long input_seconds = (int)(ClcGameTime(RealServerTime) + InitialOffset);
+	long TimezoneOffset = bAccordingTimeZone ? 60 * 60 * TimeZone : 0;
+
+	long input_seconds = (int)(ClcGameTime(RealServerTime) + InitialOffset + TimezoneOffset);
 
 	time_t rawtime = (time_t)input_seconds;
 

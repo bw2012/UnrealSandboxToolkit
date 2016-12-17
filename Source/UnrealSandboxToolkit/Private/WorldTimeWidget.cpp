@@ -8,9 +8,9 @@
 FString UWorldTimeWidget::GetTimeString() {
 	if (SandboxEnvironment->IsValidLowLevel()) {
 		AGameStateBase* GameState = GetWorld()->GetGameState();
-		SandboxGameTime GameTimeOfDay = SandboxEnvironment->ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds());
+		SandboxGameTime GameTimeOfDay = SandboxEnvironment->ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds(), true);
 
-		return FString::Printf(TEXT("%02d:%02d"), GameTimeOfDay.hours + SandboxEnvironment->TimeZone, GameTimeOfDay.minutes);
+		return FString::Printf(TEXT("%02d:%02d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
 	}
 
 	return TEXT("");

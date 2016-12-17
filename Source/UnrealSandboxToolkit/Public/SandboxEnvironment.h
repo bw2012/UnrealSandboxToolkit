@@ -78,7 +78,7 @@ public:
 
 	SandboxGameTime ClcLocalGameTime(float RealServerTime);
 
-	SandboxGameTime ClcGameTimeOfDay(float RealServerTime);
+	SandboxGameTime ClcGameTimeOfDay(float RealServerTime, bool bAccordingTimeZone);
 
 	void SandboxSetTimeOffset(float time);
 
