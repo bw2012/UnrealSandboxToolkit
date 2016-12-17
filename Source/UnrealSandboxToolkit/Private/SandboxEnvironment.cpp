@@ -59,8 +59,8 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 	Time.dSeconds = GameTimeOfDay.seconds;
 
 	cLocation GeoLoc;
-	GeoLoc.dLongitude = 30.31;
-	GeoLoc.dLatitude = 59.95;
+	GeoLoc.dLongitude = Lng;
+	GeoLoc.dLatitude = Lat;
 
 	cSunCoordinates SunPosition;
 
