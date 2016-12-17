@@ -1,6 +1,6 @@
 # UnrealSandboxToolkit
 
-UE4 4 plugin for very quick start
+UE4 plugin for very quick start
 
 This plugin contains miscellaneous tools for sandbox game development
 
