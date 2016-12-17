@@ -1,13 +1,15 @@
 # UnrealSandboxToolkit
 
-Unreal Engine 4 quick start toolkit
+UE4 4 plugin for very quick start
 
- Tested with Unreal Engine 4.14.1
+This plugin contains miscellaneous tools for sandbox game development
+
+Tested with Unreal Engine 4.14.1
 
 **Work in progress**
 
 
-# Features
+# Current features
 * day/night cycle (with real sun position according geo location, time and time zone)
 * character first-person/third-person/top-down runtime change
 
