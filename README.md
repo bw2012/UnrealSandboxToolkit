@@ -14,5 +14,10 @@ Tested with Unreal Engine 4.14.1
 * character first-person/third-person/top-down runtime change
 
 
+
+![day_night_cycle](http://www.unrealsandbox.com/daynight_cycle.gif)
+
+
+
 # License
 MIT license

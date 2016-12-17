@@ -132,7 +132,7 @@ SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
 }
 
 SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
-	static const long InitialOffset = 60 * 60 * (12 - TimeZone); // always start game at 12:00
+	static const long InitialOffset = 60 * 60 * 12; // always start game at 12:00
 	long input_seconds = (int)(ClcGameTime(RealServerTime) + InitialOffset);
 
 	time_t rawtime = (time_t)input_seconds;
@@ -142,7 +142,7 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
 	gmtime_s(&ptm, &rawtime);
 
 	SandboxGameTime Time;
-	Time.hours = ptm.tm_hour + TimeZone;
+	Time.hours = ptm.tm_hour;
 	Time.minutes = ptm.tm_min;
 	Time.seconds = ptm.tm_sec;
 
