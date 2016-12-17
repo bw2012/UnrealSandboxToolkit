@@ -63,6 +63,9 @@ public:
 	int InitialDay = 10;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	int InitialHour = 12;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
 	int TimeZone;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox Time")

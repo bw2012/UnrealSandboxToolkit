@@ -49,12 +49,14 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 
 	SandboxGameTime GameTimeOfDay = ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds());
 
+	//UE_LOG(LogTemp, Warning, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
+
 	cTime Time;
 	Time.iYear = InitialYear;
 	Time.iMonth = InitialMonth;
 	Time.iDay = InitialDay;
 
-	Time.dHours = GameTimeOfDay.hours + TimeZone;
+	Time.dHours = GameTimeOfDay.hours;
 	Time.dMinutes = GameTimeOfDay.minutes;
 	Time.dSeconds = GameTimeOfDay.seconds;
 
@@ -92,8 +94,7 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 				if (SkyLightComponent != NULL) {
 					if (SunHeightFloatVal > 0) {
 						SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeightFloatVal;
-					}
-					else {
+					} else {
 						SkyLightComponent->Intensity = NightSkyLigthIntensity; //night
 					}
 
@@ -131,7 +132,8 @@ SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
 }
 
 SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
-	long input_seconds = (int)(ClcGameTime(RealServerTime) + 60 * 60 * 12);
+	static const long InitialOffset = 60 * 60 * (12 - TimeZone); // always start game at 12:00
+	long input_seconds = (int)(ClcGameTime(RealServerTime) + InitialOffset);
 
 	time_t rawtime = (time_t)input_seconds;
 
@@ -139,12 +141,12 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
 
 	gmtime_s(&ptm, &rawtime);
 
-	SandboxGameTime ret;
-	ret.hours = ptm.tm_hour;
-	ret.minutes = ptm.tm_min;
-	ret.seconds = ptm.tm_sec;
+	SandboxGameTime Time;
+	Time.hours = ptm.tm_hour + TimeZone;
+	Time.minutes = ptm.tm_min;
+	Time.seconds = ptm.tm_sec;
 
-	return ret;
+	return Time;
 }
 
 
