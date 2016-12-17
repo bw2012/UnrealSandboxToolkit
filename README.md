@@ -17,7 +17,7 @@ Tested with Unreal Engine 4.14.1
 
 ![day_night](http://www.unrealsandbox.com/daynight_cycle2.gif)
 
-
+![day_night](http://www.unrealsandbox.com/daynight_cycle3.gif)
 
 # License
 MIT license
