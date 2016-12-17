@@ -53,6 +53,24 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	bool bEnableDayNightCycle;
 
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	int InitialYear = 2016;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	int InitialMonth = 6;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	int InitialDay = 10;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	int TimeZone;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	float Lat;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	float Lng;
+
 	float ClcGameTime(float RealServerTime);
 
 	SandboxGameTime ClcLocalGameTime(float RealServerTime);

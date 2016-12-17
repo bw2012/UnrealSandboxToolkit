@@ -3,6 +3,7 @@
 #include "UnrealSandboxToolkitPrivatePCH.h"
 #include "SandboxEnvironment.h"
 #include <ctime>
+#include "SunPos.h"
 
 
 ASandboxEnvironment::ASandboxEnvironment() {
@@ -15,6 +16,11 @@ ASandboxEnvironment::ASandboxEnvironment() {
 	RecaptureSkyTreshold = 0.5f;
 
 	bEnableDayNightCycle = true;
+
+	Lng = 27.55;
+	Lat = 53.91;
+
+	TimeZone = +3;
 }
 
 void ASandboxEnvironment::BeginPlay() {
@@ -41,15 +47,27 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 		return;
 	}
 
-	float LocalTime = ClcGameTime(GameState->GetServerWorldTimeSeconds()) * TimeScale;
+	SandboxGameTime GameTimeOfDay = ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds());
 
-	float Delta = LocalTime - LastTime;
-	LastTime = LocalTime;
+	cTime Time;
+	Time.iYear = InitialYear;
+	Time.iMonth = InitialMonth;
+	Time.iDay = InitialDay;
 
-	float Offset = (180.0f / (60.0f * 60.0f * 12.0f)) * Delta;
+	Time.dHours = GameTimeOfDay.hours + TimeZone;
+	Time.dMinutes = GameTimeOfDay.minutes;
+	Time.dSeconds = GameTimeOfDay.seconds;
+
+	cLocation GeoLoc;
+	GeoLoc.dLongitude = 30.31;
+	GeoLoc.dLatitude = 59.95;
+
+	cSunCoordinates SunPosition;
+
+	sunpos(Time, GeoLoc, &SunPosition);
 
 	if (DirectionalLightSource != NULL && SkySphere != NULL) {
-		DirectionalLightSource->AddActorLocalRotation(FRotator(0.0f, Offset, 0.0f)); //yaw
+		DirectionalLightSource->SetActorRotation(FRotator(-(90 - SunPosition.dZenithAngle), SunPosition.dAzimuth, 0.0f));
 
 		FOutputDeviceNull Ar;
 		SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), Ar, NULL, true);
@@ -124,6 +142,7 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime) {
 	SandboxGameTime ret;
 	ret.hours = ptm.tm_hour;
 	ret.minutes = ptm.tm_min;
+	ret.seconds = ptm.tm_sec;
 
 	return ret;
 }
