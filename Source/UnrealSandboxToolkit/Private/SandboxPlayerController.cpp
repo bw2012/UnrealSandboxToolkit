@@ -22,15 +22,15 @@ void ASandboxPlayerController::SetupInputComponent() {
 	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &ASandboxPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &ASandboxPlayerController::OnSetDestinationReleased);
+	InputComponent->BindAction("MainAction", IE_Pressed, this, &ASandboxPlayerController::OnMainActionPressed);
+	InputComponent->BindAction("MainAction", IE_Released, this, &ASandboxPlayerController::OnMainActionReleased);
+
+	InputComponent->BindAction("AltAction", IE_Pressed, this, &ASandboxPlayerController::OnAltActionPressed);
+	InputComponent->BindAction("AltAction", IE_Released, this, &ASandboxPlayerController::OnAltActionReleased);
 
 	// support touch devices 
 	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AUE4VoxelTerrainPlayerController::MoveToTouchLocation);
 	//InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AUE4VoxelTerrainPlayerController::MoveToTouchLocation);
-
-	InputComponent->BindAction("Test", IE_Pressed, this, &ASandboxPlayerController::OnMainActionPressed);
-	InputComponent->BindAction("Test", IE_Released, this, &ASandboxPlayerController::OnMainActionReleased);
 
 	InputComponent->BindAction("ToggleView", IE_Pressed, this, &ASandboxPlayerController::ToggleView);
 }
@@ -68,7 +68,7 @@ void ASandboxPlayerController::SetNewMoveDestination(const FVector DestLocation)
 	}
 }
 
-void ASandboxPlayerController::OnSetDestinationPressed() {
+void ASandboxPlayerController::SetDestinationPressed() {
 	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
 	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) {
 		return;
@@ -77,7 +77,7 @@ void ASandboxPlayerController::OnSetDestinationPressed() {
 	bMoveToMouseCursor = true;
 }
 
-void ASandboxPlayerController::OnSetDestinationReleased() {
+void ASandboxPlayerController::SetDestinationReleased() {
 	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
 	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) {
 		return;
@@ -86,14 +86,20 @@ void ASandboxPlayerController::OnSetDestinationReleased() {
 	bMoveToMouseCursor = false;
 }
 
+void ASandboxPlayerController::OnMainActionPressed() {
 
-void ASandboxPlayerController::OnMainActionReleased() {
-	GetWorld()->GetTimerManager().ClearTimer(timer);
 }
 
+void ASandboxPlayerController::OnMainActionReleased() {
 
-void ASandboxPlayerController::OnMainActionPressed() {
-	
+}
+
+void ASandboxPlayerController::OnAltActionPressed() {
+
+}
+
+void ASandboxPlayerController::OnAltActionReleased() {
+
 }
 
 void ASandboxPlayerController::ToggleView() {
@@ -102,15 +108,9 @@ void ASandboxPlayerController::ToggleView() {
 	if (pawn->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
 		pawn->InitThirdPersonView();
 		bShowMouseCursor = false;
-
-		//hud->openTpvHud();
-		//disableZCut();
 	} else if (pawn->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
 		pawn->InitTopDownView();
 		bShowMouseCursor = true;
-
-		//hud->closeTpvHud();
-		//z_cut_context.force_check = true;
 	} 
 }
 
