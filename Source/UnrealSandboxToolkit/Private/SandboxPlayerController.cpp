@@ -70,18 +70,16 @@ void ASandboxPlayerController::SetNewMoveDestination(const FVector DestLocation)
 
 void ASandboxPlayerController::SetDestinationPressed() {
 	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
-	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) {
-		return;
-	}
+	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) return;
+	if (pawn->IsDead()) return;
 
 	bMoveToMouseCursor = true;
 }
 
 void ASandboxPlayerController::SetDestinationReleased() {
 	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
-	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) {
-		return;
-	}
+	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) return;
+	if (pawn->IsDead()) return;
 
 	bMoveToMouseCursor = false;
 }

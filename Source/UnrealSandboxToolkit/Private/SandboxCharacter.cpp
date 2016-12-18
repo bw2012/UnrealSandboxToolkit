@@ -26,6 +26,8 @@ ASandboxCharacter::ASandboxCharacter() {
 	FirstPersonCamera->RelativeLocation = FVector(30.4f, 1.75f, 64.f); // Position the camera
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ASandboxCharacter::OnHit);
+
 	// initial view
 	CurrentPlayerView = PlayerView::TOP_DOWN;
 	InitTopDownView();
@@ -54,6 +56,11 @@ void ASandboxCharacter::BeginPlay() {
 
 void ASandboxCharacter::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
+
+	if (IsDead()) {
+		FVector MeshLoc = GetMesh()->GetSocketLocation(TEXT("pelvis"));
+		GetCapsuleComponent()->SetWorldLocation(MeshLoc - InitialMeshTransform.GetLocation());
+	}
 }
 
 void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputComponent) {
@@ -63,12 +70,13 @@ void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 	InputComponent->BindAction("ZoomOut", IE_Released, this, &ASandboxCharacter::ZoomOut);
 
 
-	InputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	InputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	InputComponent->BindAction("Jump", IE_Pressed, this, &ASandboxCharacter::Jump);
+	InputComponent->BindAction("Jump", IE_Released, this, &ASandboxCharacter::StopJumping);
 
 	InputComponent->BindAxis("MoveForward", this, &ASandboxCharacter::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &ASandboxCharacter::MoveRight);
 
+	InputComponent->BindAction("Test", IE_Pressed, this, &ASandboxCharacter::Test);
 
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
@@ -78,6 +86,19 @@ void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 	InputComponent->BindAxis("LookUp", this, &ASandboxCharacter::AddControllerPitchInput);
 	InputComponent->BindAxis("LookUpRate", this, &ASandboxCharacter::LookUpAtRate);
 }
+
+void ASandboxCharacter::Jump() {
+	if (IsDead()) return;
+
+	Super::Jump();
+}
+
+void ASandboxCharacter::StopJumping() {
+	if (IsDead()) return;
+
+	Super::StopJumping();
+}
+
 
 void ASandboxCharacter::ZoomIn() {
 	if (GetCameraBoom() == NULL) return;
@@ -214,6 +235,8 @@ void ASandboxCharacter::MoveForward(float Value) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
 
+	if (IsDead()) { return; };
+
 	if (CurrentPlayerView == PlayerView::THIRD_PERSON) {
 		if (Value != 0.0f)	{
 			// find out which way is forward
@@ -237,6 +260,8 @@ void ASandboxCharacter::MoveForward(float Value) {
 void ASandboxCharacter::MoveRight(float Value) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	if (IsDead()) { return; };
 
 	if (CurrentPlayerView == PlayerView::THIRD_PERSON) {
 		if (Value != 0.0f) {
@@ -265,4 +290,34 @@ PlayerView ASandboxCharacter::GetSandboxPlayerView() {
 
 void ASandboxCharacter::SetSandboxPlayerView(PlayerView SandboxView) {
 	CurrentPlayerView = SandboxView;
+}
+
+void ASandboxCharacter::Test() {
+	if(!IsDead()) {
+		Kill();
+	} else {
+		LiveUp();
+	}
+}
+
+void ASandboxCharacter::Kill() {
+	if (!IsDead()) {
+		InitialMeshTransform = GetMesh()->GetRelativeTransform();
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetAllBodiesBelowPhysicsBlendWeight(TEXT("pelvis"), 1);
+		bIsDead = true;
+	}
+}
+
+void ASandboxCharacter::LiveUp() {
+	if (IsDead()) {
+		GetMesh()->SetSimulatePhysics(false);
+		bIsDead = false;
+		GetMesh()->AttachTo(GetCapsuleComponent(), NAME_None, EAttachLocation::SnapToTargetIncludingScale);
+		GetMesh()->SetRelativeTransform(InitialMeshTransform);
+	}
+}
+
+void ASandboxCharacter::OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult) {
+	UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f %f %f"), GetCapsuleComponent()->GetComponentVelocity().X, GetCapsuleComponent()->GetComponentVelocity().Y, GetCapsuleComponent()->GetComponentVelocity().Z);
 }

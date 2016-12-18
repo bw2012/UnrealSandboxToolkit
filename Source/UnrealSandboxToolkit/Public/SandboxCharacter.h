@@ -57,13 +57,34 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox")
 	PlayerView InitialView = PlayerView::TOP_DOWN;
 
+	bool IsDead() { return bIsDead; }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	void Kill();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	void LiveUp();
+
+	void Jump() override;
+
+	void StopJumping() override;
+
 private:
 	PlayerView CurrentPlayerView;
+
+	bool bIsDead = false;
+
+	FTransform InitialMeshTransform;
+
+	UFUNCTION()
+	void OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult);
 
 protected:
 	void ZoomIn();
 
 	void ZoomOut();
+
+	void Test();
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
