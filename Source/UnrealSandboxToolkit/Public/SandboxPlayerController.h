@@ -35,9 +35,9 @@ protected:
 	void SetNewMoveDestination(const FVector DestLocation);
 
 	/** Input handlers for SetDestination action. */
-	void OnSetDestinationPressed();
+	void SetDestinationPressed();
 
-	void OnSetDestinationReleased();
+	void SetDestinationReleased();
 
 	// ==========================================================================================================
 
@@ -45,9 +45,11 @@ protected:
 
 	virtual void OnMainActionReleased();
 
-	virtual void ToggleView();
+	virtual void OnAltActionPressed();
 
-	FTimerHandle timer;
+	virtual void OnAltActionReleased();
+
+	virtual void ToggleView();
 
 public:
 
