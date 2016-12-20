@@ -44,10 +44,13 @@ public:
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
 	void InitTopDownView();
 
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
 	void InitThirdPersonView();
 
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
 	void InitFirstPersonView();
 
 	PlayerView GetSandboxPlayerView();
@@ -69,6 +72,21 @@ public:
 
 	void StopJumping() override;
 
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float MaxZoom;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float MinZoom;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float ZoomStep;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float WalkSpeed;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float RunSpeed;
+
 private:
 	PlayerView CurrentPlayerView;
 
@@ -83,6 +101,10 @@ protected:
 	void ZoomIn();
 
 	void ZoomOut();
+
+	void BoostOn();
+
+	void BoostOff();
 
 	void Test();
 

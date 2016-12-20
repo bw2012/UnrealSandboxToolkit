@@ -22,7 +22,7 @@ ASandboxCharacter::ASandboxCharacter() {
 	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
-	FirstPersonCamera->SetupAttachment(GetCapsuleComponent());
+	FirstPersonCamera->SetupAttachment(GetMesh(), TEXT("head"));
 	FirstPersonCamera->RelativeLocation = FVector(30.4f, 1.75f, 64.f); // Position the camera
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
@@ -34,6 +34,15 @@ ASandboxCharacter::ASandboxCharacter() {
 
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+
+	MaxZoom = 500;
+	MinZoom = 100;
+	ZoomStep = 50;
+
+	WalkSpeed = 200;
+	RunSpeed = 600;
+
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void ASandboxCharacter::BeginPlay() {
@@ -69,6 +78,8 @@ void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 	InputComponent->BindAction("ZoomIn", IE_Released, this, &ASandboxCharacter::ZoomIn);
 	InputComponent->BindAction("ZoomOut", IE_Released, this, &ASandboxCharacter::ZoomOut);
 
+	InputComponent->BindAction("Boost", IE_Pressed, this, &ASandboxCharacter::BoostOn);
+	InputComponent->BindAction("Boost", IE_Released, this, &ASandboxCharacter::BoostOff);
 
 	InputComponent->BindAction("Jump", IE_Pressed, this, &ASandboxCharacter::Jump);
 	InputComponent->BindAction("Jump", IE_Released, this, &ASandboxCharacter::StopJumping);
@@ -87,6 +98,16 @@ void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 	InputComponent->BindAxis("LookUpRate", this, &ASandboxCharacter::LookUpAtRate);
 }
 
+
+void ASandboxCharacter::BoostOn() {
+	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+
+}
+
+void ASandboxCharacter::BoostOff() {
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
 void ASandboxCharacter::Jump() {
 	if (IsDead()) return;
 
@@ -102,20 +123,30 @@ void ASandboxCharacter::StopJumping() {
 
 void ASandboxCharacter::ZoomIn() {
 	if (GetCameraBoom() == NULL) return;
-	if (GetCameraBoom()->TargetArmLength > 200) {
-		GetCameraBoom()->TargetArmLength -= 100;
+	if (CurrentPlayerView == PlayerView::FIRST_PERSON) return;
+
+	if (GetCameraBoom()->TargetArmLength > MinZoom) {
+		GetCameraBoom()->TargetArmLength -= ZoomStep;
+	} else {
+		InitFirstPersonView();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ZoomIn: %f"), GetCameraBoom()->TargetArmLength);
+	//UE_LOG(LogTemp, Warning, TEXT("ZoomIn: %f"), GetCameraBoom()->TargetArmLength);
 }
 
 void ASandboxCharacter::ZoomOut() {
 	if (GetCameraBoom() == NULL) return;
-	if (GetCameraBoom()->TargetArmLength < 2500) {
-		GetCameraBoom()->TargetArmLength += 100;
+
+	if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
+		InitThirdPersonView();
+		return;
+	};
+
+	if (GetCameraBoom()->TargetArmLength < MaxZoom) {
+		GetCameraBoom()->TargetArmLength += ZoomStep;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ZoomOut: %f"), GetCameraBoom()->TargetArmLength);
+	//UE_LOG(LogTemp, Warning, TEXT("ZoomOut: %f"), GetCameraBoom()->TargetArmLength);
 }
 
 void ASandboxCharacter::InitTopDownView() {
