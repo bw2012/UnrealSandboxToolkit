@@ -192,7 +192,7 @@ void ASandboxCharacter::InitThirdPersonView() {
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	CameraBoom->bDoCollisionTest = true;
 	CameraBoom->ProbeSize = 12;
-	CameraBoom->RelativeLocation = FVector(0, 0, 0);
+	CameraBoom->RelativeLocation = FVector(0, 0, 64);
 
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
