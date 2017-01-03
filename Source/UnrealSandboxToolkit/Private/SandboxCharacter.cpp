@@ -23,7 +23,8 @@ ASandboxCharacter::ASandboxCharacter() {
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(GetMesh(), TEXT("head"));
-	FirstPersonCamera->RelativeLocation = FVector(30.4f, 1.75f, 64.f); // Position the camera
+	FirstPersonCamera->RelativeLocation = FVector(10.0f, 32.0f, 0.f); // Position the camera
+	FirstPersonCamera->RelativeRotation = FRotator(0, 90, -90);
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ASandboxCharacter::OnHit);
@@ -191,7 +192,7 @@ void ASandboxCharacter::InitThirdPersonView() {
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	CameraBoom->bDoCollisionTest = true;
 	CameraBoom->ProbeSize = 12;
-	CameraBoom->RelativeLocation = FVector(40, 30, 64);
+	CameraBoom->RelativeLocation = FVector(0, 0, 0);
 
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
