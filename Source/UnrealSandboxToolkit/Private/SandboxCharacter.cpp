@@ -230,6 +230,10 @@ void ASandboxCharacter::InitFirstPersonView() {
 void ASandboxCharacter::AddControllerYawInput(float Val) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
+	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
+
 	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	Super::AddControllerYawInput(Val);
@@ -239,6 +243,10 @@ void ASandboxCharacter::AddControllerYawInput(float Val) {
 void ASandboxCharacter::AddControllerPitchInput(float Val) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
+	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
+
 	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	Super::AddControllerPitchInput(Val);
@@ -247,6 +255,10 @@ void ASandboxCharacter::AddControllerPitchInput(float Val) {
 void ASandboxCharacter::TurnAtRate(float Rate) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
+	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
+
 	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	// calculate delta for this frame from the rate information
@@ -256,6 +268,10 @@ void ASandboxCharacter::TurnAtRate(float Rate) {
 void ASandboxCharacter::LookUpAtRate(float Rate) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
+	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
+
 	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 
 	// calculate delta for this frame from the rate information
@@ -266,6 +282,9 @@ void ASandboxCharacter::LookUpAtRate(float Rate) {
 void ASandboxCharacter::MoveForward(float Value) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
+	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
 
 	if (IsDead()) { return; };
 
@@ -292,6 +311,9 @@ void ASandboxCharacter::MoveForward(float Value) {
 void ASandboxCharacter::MoveRight(float Value) {
 	AController* controller = (AController*)GetController();
 	if (controller == NULL) { return; }
+
+	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
+	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
 
 	if (IsDead()) { return; };
 
@@ -351,5 +373,5 @@ void ASandboxCharacter::LiveUp() {
 }
 
 void ASandboxCharacter::OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult) {
-	UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f %f %f"), GetCapsuleComponent()->GetComponentVelocity().X, GetCapsuleComponent()->GetComponentVelocity().Y, GetCapsuleComponent()->GetComponentVelocity().Z);
+	//UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f %f %f"), GetCapsuleComponent()->GetComponentVelocity().X, GetCapsuleComponent()->GetComponentVelocity().Y, GetCapsuleComponent()->GetComponentVelocity().Z);
 }

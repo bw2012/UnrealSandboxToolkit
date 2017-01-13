@@ -4,9 +4,17 @@
 #include "ObjectContainerCellWidget.h"
 #include "ContainerComponent.h"
 #include "SandboxObject.h"
+#include "SandboxPlayerController.h"
 
 
 ESlateVisibility USandboxObjectContainerCellWidget::IsSlotSelected(int32 SlotId) {
+	ASandboxPlayerController* PlayerController = Cast<ASandboxPlayerController>(GetOwningPlayer());
+	if (PlayerController != NULL) {
+		if (PlayerController->CurrentInventorySlot == SlotId) {
+			return ESlateVisibility::Visible;
+		}
+	}
+
 	return ESlateVisibility::Hidden;
 }
 

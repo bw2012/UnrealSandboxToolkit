@@ -7,7 +7,7 @@
 
 ASandboxPlayerController::ASandboxPlayerController() {
 	bShowMouseCursor = true;
-	DefaultMouseCursor = EMouseCursor::Crosshairs;
+	DefaultMouseCursor = EMouseCursor::Default;
 }
 
 void ASandboxPlayerController::PlayerTick(float DeltaTime) {
@@ -126,4 +126,13 @@ void ASandboxPlayerController::Possess(APawn* aPawn) {
 
 }
 
+void ASandboxPlayerController::BlockGameInput() {
+	bIsGameInputBlocked = true;
+	bShowMouseCursor = true;
+}
+
+void ASandboxPlayerController::UnblockGameInput() {
+	bIsGameInputBlocked = false;
+	bShowMouseCursor = false;
+}
 

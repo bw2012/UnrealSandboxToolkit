@@ -19,6 +19,15 @@ public:
 
 	virtual void Possess(APawn* aPawn) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void BlockGameInput();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void UnblockGameInput();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	bool IsGameInputBlocked() { return bIsGameInputBlocked; }
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -61,6 +70,8 @@ public:
 private:
 
 	FHitResult CerrentPos;
+
+	bool bIsGameInputBlocked;
 
 };
 
