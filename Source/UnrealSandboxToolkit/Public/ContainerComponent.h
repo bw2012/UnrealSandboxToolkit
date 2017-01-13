@@ -13,11 +13,14 @@ USTRUCT()
 struct FContainerStack {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	int32 cid;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	int32 amount;
+
+	UPROPERTY(EditAnywhere)
+	ASandboxObject* Object;
 
 	FContainerStack() {
 		clear();

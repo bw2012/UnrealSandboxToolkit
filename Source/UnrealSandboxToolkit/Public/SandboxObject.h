@@ -20,6 +20,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	UStaticMeshComponent* SandboxRootMesh;
 
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	UTexture2D* IconTexture;
+
 	virtual void BeginPlay() override;
 
 	virtual void BeginDestroy() override;
