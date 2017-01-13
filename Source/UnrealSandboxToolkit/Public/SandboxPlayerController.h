@@ -12,6 +12,9 @@ class UNREALSANDBOXTOOLKIT_API ASandboxPlayerController : public APlayerControll
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	int32 CurrentInventorySlot;
+
 	ASandboxPlayerController();
 
 	virtual void Possess(APawn* aPawn) override;
