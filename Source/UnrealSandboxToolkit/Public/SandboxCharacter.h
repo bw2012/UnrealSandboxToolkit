@@ -4,6 +4,8 @@
 
 #include "EngineMinimal.h"
 #include "GameFramework/Character.h"
+#include "Runtime/UMG/Public/UMG.h"
+#include "SlateBasics.h"
 #include "SandboxCharacter.generated.h"
 
 
@@ -86,6 +88,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
 	float RunSpeed;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float InteractionTargetLength;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UnrealSandbox UI")
+	TSubclassOf<UUserWidget> CrosshairWidget;
 
 private:
 	PlayerView CurrentPlayerView;

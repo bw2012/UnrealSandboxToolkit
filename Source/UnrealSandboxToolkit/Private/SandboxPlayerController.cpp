@@ -4,6 +4,7 @@
 #include "SandboxPlayerController.h"
 #include "AI/Navigation/NavigationSystem.h"
 #include "SandboxCharacter.h"
+#include "SandboxObject.h"
 
 ASandboxPlayerController::ASandboxPlayerController() {
 	bShowMouseCursor = true;
@@ -100,6 +101,22 @@ void ASandboxPlayerController::OnAltActionReleased() {
 
 }
 
+void ASandboxPlayerController::OpenCrosshairWidget() {
+	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
+
+	if (Pawn != nullptr) {
+		CrosshairWidgetInstance = CreateWidget<UUserWidget>(this, Pawn->CrosshairWidget);
+		CrosshairWidgetInstance->AddToViewport();
+	}
+}
+
+void ASandboxPlayerController::CloseCrosshairWidget() {
+	if (CrosshairWidgetInstance != nullptr) {
+		CrosshairWidgetInstance->RemoveFromViewport();
+		CrosshairWidgetInstance = nullptr;
+	}
+}
+
 void ASandboxPlayerController::ToggleView() {
 	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
 
@@ -136,3 +153,74 @@ void ASandboxPlayerController::UnblockGameInput() {
 	bShowMouseCursor = false;
 }
 
+FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
+	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
+
+	if (Pawn->GetSandboxPlayerView() == PlayerView::THIRD_PERSON || Pawn->GetSandboxPlayerView() == PlayerView::FIRST_PERSON) {
+		float MaxUseDistance = Pawn->InteractionTargetLength;
+
+		if (Pawn->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
+			if (Pawn->GetCameraBoom() != NULL) {
+				MaxUseDistance = Pawn->GetCameraBoom()->TargetArmLength + MaxUseDistance;
+			}
+		}
+
+		FVector CamLoc;
+		FRotator CamRot;
+		GetPlayerViewPoint(CamLoc, CamRot);
+
+		const FVector StartTrace = CamLoc;
+		const FVector Direction = CamRot.Vector();
+		const FVector EndTrace = StartTrace + (Direction * MaxUseDistance);
+
+		FCollisionQueryParams TraceParams(FName(TEXT("")), true, this);
+		TraceParams.bTraceAsyncScene = true;
+		TraceParams.bReturnPhysicalMaterial = false;
+		TraceParams.bTraceComplex = true;
+		TraceParams.AddIgnoredActor(Pawn);
+
+		FHitResult Hit(ForceInit);
+		GetWorld()->LineTraceSingleByChannel(Hit, StartTrace, EndTrace, ECC_Visibility, TraceParams);
+
+		return Hit;
+	}
+
+	if (Pawn->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
+		FHitResult Hit;
+		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+		return Hit;
+	}
+
+	return FHitResult();
+}
+
+void SetRenderCustomDepth(AActor* Actor, bool RenderCustomDepth) {
+	TArray<UStaticMeshComponent*> MeshComponentList;
+	Actor->GetComponents<UStaticMeshComponent>(MeshComponentList);
+
+	for (UStaticMeshComponent* MeshComponent : MeshComponentList) {
+		MeshComponent->SetRenderCustomDepth(RenderCustomDepth);
+	}
+}
+
+UFUNCTION(BlueprintCallable, Category = "Sandbox")
+void ASandboxPlayerController::SelectActionObject(AActor* Actor) {
+	ASandboxObject* Obj = Cast<ASandboxObject>(Actor);
+
+	if (SelectedObject != Obj) {
+		if (SelectedObject != nullptr && SelectedObject->IsValidLowLevel()) {
+			SetRenderCustomDepth(SelectedObject, false);
+		}
+	}
+
+	if (Obj != nullptr) {
+		SetRenderCustomDepth(Obj, true);
+		SelectedObject = Obj;
+	} else {
+		if (SelectedObject != nullptr && SelectedObject->IsValidLowLevel()) {
+			SetRenderCustomDepth(SelectedObject, false);
+		}
+	}
+
+
+}

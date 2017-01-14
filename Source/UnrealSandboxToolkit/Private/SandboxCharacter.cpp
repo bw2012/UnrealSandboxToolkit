@@ -43,6 +43,8 @@ ASandboxCharacter::ASandboxCharacter() {
 	WalkSpeed = 200;
 	RunSpeed = 600;
 
+	InteractionTargetLength = 200;
+
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
@@ -174,9 +176,10 @@ void ASandboxCharacter::InitTopDownView() {
 
 	CurrentPlayerView = PlayerView::TOP_DOWN;
 
-	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
-	if (controller != NULL) {
-		controller->ShowMouseCursor(true);
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (Controller != NULL) {
+		Controller->ShowMouseCursor(true);
+		Controller->OpenCrosshairWidget();
 	}
 }
 
@@ -201,9 +204,13 @@ void ASandboxCharacter::InitThirdPersonView() {
 
 	CurrentPlayerView = PlayerView::THIRD_PERSON;
 
-	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
-	if (controller != NULL) {
-		controller->ShowMouseCursor(false);
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (Controller != NULL) {
+		Controller->ShowMouseCursor(false);
+
+		if (CrosshairWidget) {
+			Controller->CloseCrosshairWidget();
+		}
 	}
 }
 
@@ -221,9 +228,13 @@ void ASandboxCharacter::InitFirstPersonView() {
 
 	CurrentPlayerView = PlayerView::FIRST_PERSON;
 
-	ASandboxPlayerController* controller = Cast<ASandboxPlayerController>(GetController());
-	if (controller != NULL) {
-		controller->ShowMouseCursor(false);
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (Controller != NULL) {
+		Controller->ShowMouseCursor(false);
+
+		if (CrosshairWidget) {
+			Controller->OpenCrosshairWidget();
+		}
 	}
 }
 

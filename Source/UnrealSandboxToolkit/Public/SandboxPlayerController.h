@@ -5,6 +5,8 @@
 #include "GameFramework/PlayerController.h"
 #include "SandboxPlayerController.generated.h"
 
+class ASandboxObject;
+class UUserWidget;
 
 UCLASS()
 class UNREALSANDBOXTOOLKIT_API ASandboxPlayerController : public APlayerController
@@ -27,6 +29,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	bool IsGameInputBlocked() { return bIsGameInputBlocked; }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	FHitResult TracePlayerActionPoint();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void SelectActionObject(AActor* Actor);
+
+	void OpenCrosshairWidget();
+
+	void CloseCrosshairWidget();
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
@@ -69,10 +81,15 @@ public:
 
 private:
 
-	FHitResult CerrentPos;
+	FHitResult CurrentPos;
 
 	bool bIsGameInputBlocked;
 
+	UPROPERTY()
+	ASandboxObject* SelectedObject;
+
+	UPROPERTY()
+	UUserWidget* CrosshairWidgetInstance;
 };
 
 
