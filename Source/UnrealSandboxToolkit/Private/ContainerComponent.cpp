@@ -41,14 +41,15 @@ bool  UContainerComponent::isEmpty() {
 	return true;
 }
 
-bool UContainerComponent::addStackToInventory(FContainerStack stack, int slot) {
-	if (slot >= Content.Num()) {
-		Content.SetNum(slot + 1);
+bool UContainerComponent::AddStack(const FContainerStack Stack, const int SlotId) {
+	if (SlotId >= Content.Num()) {
+		Content.SetNum(SlotId + 1);
 	}
 
-	FContainerStack* stack2 = &Content[slot];
-	stack2->amount = stack.amount;
-	stack2->cid = stack.cid;
+	FContainerStack* StackPtr = &Content[SlotId];
+	StackPtr->amount = Stack.amount;
+	StackPtr->cid = Stack.cid;
+	StackPtr->Object = Stack.Object;
 
 	return true;
 }
@@ -85,15 +86,16 @@ bool UContainerComponent::addItemToInventory(ASandboxObject* item) {
 }
 
 
-FContainerStack* UContainerComponent::getInventorySlot(int slot) {
-	if (!Content.IsValidIndex(slot)) {
-		return NULL;
+FContainerStack* UContainerComponent::GetSlot(const int Slot) {
+	if (!Content.IsValidIndex(Slot)) {
+		return nullptr;
 	}
 
-	return &Content[slot];
+	return &Content[Slot];
 }
 
 void UContainerComponent::DecreaseObjectsInContainer(int slot, int num) {
+	/*
 	FContainerStack* stack = getInventorySlot(slot);
 
 	if (stack == NULL) {
@@ -108,22 +110,12 @@ void UContainerComponent::DecreaseObjectsInContainer(int slot, int num) {
 			stack->cid = -1;
 		}
 	}
+	*/
 }
 
 
 ASandboxObject* UContainerComponent::GetSandboxObjectFromContainer(int slot) {
-	if (slot < 0) {
-		return NULL;
-	}
 
-	FContainerStack* stack = getInventorySlot(slot);
-	if (stack != NULL) {
-		if (stack->cid > 0) {
-			//UClass* cls = selectClassById(stack->cid);
-			//ASandboxObject* obj = (ASandboxObject*)cls->GetDefaultObject();
-			//return obj;
-		}
-	}
 
 	return NULL;
 }
@@ -139,12 +131,10 @@ bool UContainerComponent::inventoryTransfer(int32 slot1, int32 slot2) {
 		stack1 = Content[slot1];
 	}
 
-
 	FContainerStack stack2;
 	if (Content.IsValidIndex(slot2)) {
 		stack2 = Content[slot2];
 	}
-
 
 	if (stack1.cid == stack2.cid) {
 		ASandboxObject* obj = GetSandboxObjectFromContainer(slot2);
@@ -156,9 +146,8 @@ bool UContainerComponent::inventoryTransfer(int32 slot1, int32 slot2) {
 		}
 	} 
 	
-	
-	addStackToInventory(stack1, slot2);
-	addStackToInventory(stack2, slot1);
+	AddStack(stack1, slot2);
+	AddStack(stack2, slot1);
 	
 	return true;
 }

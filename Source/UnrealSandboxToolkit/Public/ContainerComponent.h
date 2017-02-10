@@ -29,6 +29,7 @@ struct FContainerStack {
 	void clear() {
 		cid = 0;
 		amount = 0;
+		Object = nullptr;
 	}
 };
 
@@ -51,11 +52,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	TArray<FContainerStack> Content;
     
-    bool addStackToInventory(FContainerStack stack, int slot);
-	
+	bool AddStack(const FContainerStack Stack, const int SlotId);
+
 	bool addItemToInventory(ASandboxObject* item);
     
-    FContainerStack* getInventorySlot(int slot);
+	FContainerStack* GetSlot(const int Slot);
     
     void DecreaseObjectsInContainer(int slot, int num);
     
