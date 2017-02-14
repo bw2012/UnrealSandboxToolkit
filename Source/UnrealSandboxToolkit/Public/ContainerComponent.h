@@ -53,7 +53,7 @@ public:
     
 	bool AddStack(const FContainerStack Stack, const int SlotId);
 
-	bool addItemToInventory(ASandboxObject* item);
+	bool AddObject(ASandboxObject* Obj);
     
 	FContainerStack* GetSlot(const int Slot);
     

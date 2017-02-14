@@ -271,3 +271,19 @@ void ASandboxPlayerController::PutCurrentInventoryObjectToWorld() {
 		}
 	}
 }
+
+void ASandboxPlayerController::TakeObjectToInventory() {
+	UContainerComponent* Inventory = GetInventory();
+
+	if (Inventory != nullptr) {
+		FHitResult ActionPoint = TracePlayerActionPoint();
+		if (ActionPoint.bBlockingHit) {
+			ASandboxObject* Obj = Cast<ASandboxObject>(ActionPoint.GetActor());
+			if (Obj != nullptr) {
+				if (Inventory->AddObject(Obj)) {
+					Obj->Destroy();
+				}
+			}
+		}
+	}
+}

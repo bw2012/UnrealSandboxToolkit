@@ -57,38 +57,51 @@ bool UContainerComponent::AddStack(const FContainerStack Stack, const int SlotId
 }
 
 
-bool UContainerComponent::addItemToInventory(ASandboxObject* item) {
-	/*
-	bool added = false;
-	for (int i = 0; i < Content.Num(); i++) {
-		FContainerStack* stack = &Content[i];
-		if (stack->amount != 0) {
-			int item_cid = item->GetSandboxCid();
-			if (item_cid == stack->cid) {
-				stack->amount++;
-				added = true;
-				break;
+bool UContainerComponent::AddObject(ASandboxObject* Obj) {
+	if (Obj == nullptr) {
+		return false;
+	}
+
+	int FirstEmptySlot = -1;
+	bool bIsAdded = false;
+	for (int Idx = 0; Idx < Content.Num(); Idx++) {
+		FContainerStack* Stack = &Content[Idx];
+
+		//TODO unique objects (max stack size = 1)
+		//TODO check inventory max volume and mass
+
+		if (Stack->amount != 0) {
+			if (Stack->ObjectClass != nullptr) {
+				UE_LOG(LogTemp, Warning, TEXT("%s - %s "), *Stack->ObjectClass->GetName(), *Obj->GetClass()->GetName());
+
+				if (Stack->ObjectClass->GetName().Equals(Obj->GetClass()->GetName())) {
+					Stack->amount++;
+					bIsAdded = true;
+					break;
+				}
 			}
 		} else {
-			stack->cid = item->GetSandboxCid();
-			stack->amount = 1; 
-			added = true;
-			break;
+			if (FirstEmptySlot < 0) {
+				FirstEmptySlot = Idx;
+			}
 		}
 	}
 
-	if (!added) {
-		FContainerStack stack;
-		stack.cid = item->GetSandboxCid();
-		stack.amount = 1;
+	if (!bIsAdded) {
+		if (FirstEmptySlot >= 0) {
+			FContainerStack* Stack = &Content[FirstEmptySlot];
 
-		Content.Add(stack);
+			Stack->amount = 1;
+			Stack->ObjectClass = Obj->GetClass();
+		} else {
+			FContainerStack NewStack;
+			NewStack.ObjectClass = Obj->GetClass();
+			NewStack.amount = 1;
+			Content.Add(NewStack);
+		}
 	}
 	
 	return true;
-	*/
-
-	return false;
 }
 
 

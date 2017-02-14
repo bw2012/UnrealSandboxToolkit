@@ -38,6 +38,9 @@ public:
 	void PutCurrentInventoryObjectToWorld();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void TakeObjectToInventory();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	FHitResult TracePlayerActionPoint();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
