@@ -250,7 +250,7 @@ void ASandboxPlayerController::PutCurrentInventoryObjectToWorld() {
 	if (Inventory != nullptr) {
 		FContainerStack* Stack = Inventory->GetSlot(CurrentInventorySlot);
 		if (Stack != nullptr) {
-			if (Stack->amount > 0) {
+			if (Stack->Amount > 0) {
 				TSubclassOf<ASandboxObject>	ObjectClass = Stack->ObjectClass;
 				if (ObjectClass != nullptr) {
 					FHitResult ActionPoint = TracePlayerActionPoint();

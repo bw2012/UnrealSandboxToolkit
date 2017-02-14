@@ -13,7 +13,7 @@ struct FContainerStack {
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere)
-	int32 amount;
+	int32 Amount;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ASandboxObject>	ObjectClass;
@@ -22,11 +22,11 @@ struct FContainerStack {
 	ASandboxObject* Object;
 
 	FContainerStack() {
-		clear();
+		Clear();
 	}
 
-	void clear() {
-		amount = 0;
+	void Clear() {
+		Amount = 0;
 		ObjectClass = nullptr;
 		Object = nullptr;
 	}

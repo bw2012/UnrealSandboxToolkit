@@ -24,8 +24,8 @@ FString USandboxObjectContainerCellWidget::SlotGetAmountText(int32 SlotId) {
 		FContainerStack* Stack = Container->GetSlot(SlotId);
 		if (Stack != NULL) {
 			if (Stack->ObjectClass != NULL) {
-				if (Stack->amount > 0) {
-					return FString::Printf(TEXT("%d"), Stack->amount);
+				if (Stack->Amount > 0) {
+					return FString::Printf(TEXT("%d"), Stack->Amount);
 				}
 			}
 		}
@@ -55,7 +55,7 @@ UTexture2D* USandboxObjectContainerCellWidget::GetSlotTexture(int32 SlotId) {
 	if (Container != nullptr) {
 		FContainerStack* Stack = Container->GetSlot(SlotId);
 		if (Stack != nullptr) {
-			if (Stack->amount > 0) {
+			if (Stack->Amount > 0) {
 				if (Stack->ObjectClass != nullptr) {
 					ASandboxObject* DefaultObject = Cast<ASandboxObject>(Stack->ObjectClass->GetDefaultObject());
 					if (DefaultObject != nullptr) {

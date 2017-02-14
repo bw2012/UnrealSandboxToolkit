@@ -49,7 +49,7 @@ bool UContainerComponent::AddStack(const FContainerStack Stack, const int SlotId
 	}
 
 	FContainerStack* StackPtr = &Content[SlotId];
-	StackPtr->amount = Stack.amount;
+	StackPtr->Amount = Stack.Amount;
 	StackPtr->ObjectClass = Stack.ObjectClass;
 	StackPtr->Object = Stack.Object;
 
@@ -70,12 +70,12 @@ bool UContainerComponent::AddObject(ASandboxObject* Obj) {
 		//TODO unique objects (max stack size = 1)
 		//TODO check inventory max volume and mass
 
-		if (Stack->amount != 0) {
+		if (Stack->Amount != 0) {
 			if (Stack->ObjectClass != nullptr) {
 				UE_LOG(LogTemp, Warning, TEXT("%s - %s "), *Stack->ObjectClass->GetName(), *Obj->GetClass()->GetName());
 
 				if (Stack->ObjectClass->GetName().Equals(Obj->GetClass()->GetName())) {
-					Stack->amount++;
+					Stack->Amount++;
 					bIsAdded = true;
 					break;
 				}
@@ -91,12 +91,12 @@ bool UContainerComponent::AddObject(ASandboxObject* Obj) {
 		if (FirstEmptySlot >= 0) {
 			FContainerStack* Stack = &Content[FirstEmptySlot];
 
-			Stack->amount = 1;
+			Stack->Amount = 1;
 			Stack->ObjectClass = Obj->GetClass();
 		} else {
 			FContainerStack NewStack;
 			NewStack.ObjectClass = Obj->GetClass();
-			NewStack.amount = 1;
+			NewStack.Amount = 1;
 			Content.Add(NewStack);
 		}
 	}
@@ -120,11 +120,11 @@ void UContainerComponent::DecreaseObjectsInContainer(int Slot, int Num) {
 		return;
 	}
 
-	if (Stack->amount > 0) {
-		Stack->amount -= Num;
+	if (Stack->Amount > 0) {
+		Stack->Amount -= Num;
 
-		if (Stack->amount == 0) {
-			Stack->clear();
+		if (Stack->Amount == 0) {
+			Stack->Clear();
 		}
 	}
 }
