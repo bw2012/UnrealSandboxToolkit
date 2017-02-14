@@ -287,3 +287,30 @@ void ASandboxPlayerController::TakeObjectToInventory() {
 		}
 	}
 }
+
+bool ASandboxPlayerController::OpenObjectWithContainer() {
+	FHitResult ActionPoint = TracePlayerActionPoint();
+
+	if (ActionPoint.bBlockingHit) {
+		ASandboxObject* Obj = Cast<ASandboxObject>(ActionPoint.GetActor());
+		if (Obj != nullptr) {
+			TArray<UContainerComponent*> Components;
+			Obj->GetComponents<UContainerComponent>(Components);
+
+			for (UContainerComponent* Container : Components) {
+				if (Container->GetName().Equals(TEXT("ObjectContainer"))) {
+					this->OpenedObject = Obj;
+					this->OpenedContainer = Container;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+void ASandboxPlayerController::CloseObjectWithContainer() {
+	this->OpenedObject = nullptr;
+	this->OpenedContainer = nullptr;
+}

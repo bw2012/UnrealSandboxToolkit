@@ -24,6 +24,9 @@ class UNREALSANDBOXTOOLKIT_API USandboxObjectContainerCellWidget : public UUserW
 	
 public:	
 
+	UPROPERTY(EditAnywhere, Category = "SandboxInventory")
+	uint32 ContainerId;
+
 	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
 	FLinearColor SlotBorderColor(int32 SlotId);
 

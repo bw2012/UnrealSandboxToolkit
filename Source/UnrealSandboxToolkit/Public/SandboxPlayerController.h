@@ -41,6 +41,15 @@ public:
 	void TakeObjectToInventory();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	bool OpenObjectWithContainer();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	bool HasOpenContainer() { return OpenedObject != nullptr;  }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void CloseObjectWithContainer();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	FHitResult TracePlayerActionPoint();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
@@ -99,6 +108,12 @@ private:
 
 	UPROPERTY()
 	ASandboxObject* SelectedObject;
+
+	UPROPERTY()
+	ASandboxObject* OpenedObject;
+
+	UPROPERTY()
+	UContainerComponent* OpenedContainer;
 
 	UPROPERTY()
 	UUserWidget* CrosshairWidgetInstance;
