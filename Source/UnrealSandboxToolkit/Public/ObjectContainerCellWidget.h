@@ -23,8 +23,6 @@ class UNREALSANDBOXTOOLKIT_API USandboxObjectContainerCellWidget : public UUserW
 	GENERATED_BODY()
 	
 public:	
-	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
-	ESlateVisibility IsSlotSelected(int32 SlotId);
 
 	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
 	FLinearColor SlotBorderColor(int32 SlotId);

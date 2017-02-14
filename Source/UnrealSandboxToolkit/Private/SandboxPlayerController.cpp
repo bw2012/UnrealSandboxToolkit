@@ -5,10 +5,12 @@
 #include "AI/Navigation/NavigationSystem.h"
 #include "SandboxCharacter.h"
 #include "SandboxObject.h"
+#include "ContainerComponent.h"
 
 ASandboxPlayerController::ASandboxPlayerController() {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
+	CurrentInventorySlot = -1;
 }
 
 void ASandboxPlayerController::PlayerTick(float DeltaTime) {
@@ -203,7 +205,6 @@ void SetRenderCustomDepth(AActor* Actor, bool RenderCustomDepth) {
 	}
 }
 
-UFUNCTION(BlueprintCallable, Category = "Sandbox")
 void ASandboxPlayerController::SelectActionObject(AActor* Actor) {
 	ASandboxObject* Obj = Cast<ASandboxObject>(Actor);
 
@@ -221,6 +222,46 @@ void ASandboxPlayerController::SelectActionObject(AActor* Actor) {
 			SetRenderCustomDepth(SelectedObject, false);
 		}
 	}
+}
 
+UContainerComponent* ASandboxPlayerController::GetInventory() {
+	APawn* Pawn = GetPawn();
 
+	if (Pawn != nullptr) {
+		TArray<UContainerComponent*> Components;
+		Pawn->GetComponents<UContainerComponent>(Components);
+
+		for (UContainerComponent* Container : Components) {
+			// always use only first container
+			if (Container->GetName() == TEXT("Inventory")) {
+
+			}
+
+			return Container;
+		}
+	}
+
+	return nullptr;
+}
+
+void ASandboxPlayerController::PutCurrentInventoryObjectToWorld() {
+	UContainerComponent* Inventory = GetInventory();
+
+	if (Inventory != nullptr) {
+		FContainerStack* Stack = Inventory->GetSlot(CurrentInventorySlot);
+		if (Stack != nullptr) {
+			TSubclassOf<ASandboxObject>	ObjectClass = Stack->ObjectClass;
+			if (ObjectClass != nullptr) {
+				FHitResult ActionPoint = TracePlayerActionPoint();
+				if (ActionPoint.bBlockingHit) {
+					FVector test = ActionPoint.Location;
+					test.Z = test.Z + 100;
+
+					UClass* Cls = ObjectClass;
+					FTransform Transform(FRotator(0), ActionPoint.Location, FVector(1));					
+					ASandboxObject* NewObject = (ASandboxObject*)GetWorld()->SpawnActor(Cls, &Transform);
+				}
+			}
+		}
+	}
 }

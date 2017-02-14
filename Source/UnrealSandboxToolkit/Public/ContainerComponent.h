@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "ContainerComponent.generated.h"
 
-
 class ASandboxObject;
 
 USTRUCT()
@@ -20,6 +19,9 @@ struct FContainerStack {
 	int32 amount;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASandboxObject>	ObjectClass;
+
+	UPROPERTY(BlueprintReadOnly)
 	ASandboxObject* Object;
 
 	FContainerStack() {
@@ -29,6 +31,7 @@ struct FContainerStack {
 	void clear() {
 		cid = 0;
 		amount = 0;
+		ObjectClass = nullptr;
 		Object = nullptr;
 	}
 };

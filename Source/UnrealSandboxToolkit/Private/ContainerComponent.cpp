@@ -49,7 +49,7 @@ bool UContainerComponent::AddStack(const FContainerStack Stack, const int SlotId
 	FContainerStack* StackPtr = &Content[SlotId];
 	StackPtr->amount = Stack.amount;
 	StackPtr->cid = Stack.cid;
-	StackPtr->Object = Stack.Object;
+	StackPtr->ObjectClass = Stack.ObjectClass;
 
 	return true;
 }

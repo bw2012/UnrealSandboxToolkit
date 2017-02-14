@@ -6,19 +6,14 @@
 #include "SandboxObject.h"
 #include "SandboxPlayerController.h"
 
-
-ESlateVisibility USandboxObjectContainerCellWidget::IsSlotSelected(int32 SlotId) {
+FLinearColor USandboxObjectContainerCellWidget::SlotBorderColor(int32 SlotId) {
 	ASandboxPlayerController* PlayerController = Cast<ASandboxPlayerController>(GetOwningPlayer());
 	if (PlayerController != NULL) {
 		if (PlayerController->CurrentInventorySlot == SlotId) {
-			return ESlateVisibility::Visible;
+			return FLinearColor(0.1, 0.4, 1, 1);
 		}
 	}
 
-	return ESlateVisibility::Hidden;
-}
-
-FLinearColor USandboxObjectContainerCellWidget::SlotBorderColor(int32 SlotId) {
 	return FLinearColor(0, 0, 0, 0);
 }
 
@@ -28,7 +23,7 @@ FString USandboxObjectContainerCellWidget::SlotGetAmountText(int32 SlotId) {
 	if (Container != NULL) {
 		FContainerStack* Stack = Container->GetSlot(SlotId);
 		if (Stack != NULL) {
-			if (Stack->Object != NULL) {
+			if (Stack->ObjectClass != NULL) {
 				if (Stack->amount > 0) {
 					return FString::Printf(TEXT("%d"), Stack->amount);
 				}
@@ -51,22 +46,27 @@ UContainerComponent* USandboxObjectContainerCellWidget::GetContainer() {
 		return Container;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 UTexture2D* USandboxObjectContainerCellWidget::GetSlotTexture(int32 SlotId) {
 	
 	UContainerComponent* Container = GetContainer();
-	if (Container != NULL) {
+	if (Container != nullptr) {
 		FContainerStack* Stack = Container->GetSlot(SlotId);
-		if (Stack != NULL) {
-			if (Stack->Object != NULL) {
-				return Stack->Object->IconTexture;
+		if (Stack != nullptr) {
+			if (Stack->amount > 0) {
+				if (Stack->ObjectClass != nullptr) {
+					ASandboxObject* DefaultObject = Cast<ASandboxObject>(Stack->ObjectClass->GetDefaultObject());
+					if (DefaultObject != nullptr) {
+						return DefaultObject->IconTexture;
+					}
+				}
 			}
 		}
 	}
 	
-	return NULL;
+	return nullptr;
 }
 
 void USandboxObjectContainerCellWidget::SelectSlot(int32 SlotId) {

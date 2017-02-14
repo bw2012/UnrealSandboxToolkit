@@ -7,6 +7,7 @@
 
 class ASandboxObject;
 class UUserWidget;
+class UContainerComponent;
 
 UCLASS()
 class UNREALSANDBOXTOOLKIT_API ASandboxPlayerController : public APlayerController
@@ -29,6 +30,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	bool IsGameInputBlocked() { return bIsGameInputBlocked; }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void SetCurrentInventorySlot(int32 Slot) { CurrentInventorySlot = Slot; }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void PutCurrentInventoryObjectToWorld();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	FHitResult TracePlayerActionPoint();
@@ -74,6 +81,8 @@ protected:
 	virtual void OnAltActionReleased();
 
 	virtual void ToggleView();
+
+	virtual UContainerComponent* GetInventory();
 
 public:
 
