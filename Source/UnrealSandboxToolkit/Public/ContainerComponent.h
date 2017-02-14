@@ -13,9 +13,6 @@ struct FContainerStack {
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere)
-	int32 cid;
-
-	UPROPERTY(EditAnywhere)
 	int32 amount;
 
 	UPROPERTY(EditAnywhere)
@@ -29,7 +26,6 @@ struct FContainerStack {
 	}
 
 	void clear() {
-		cid = 0;
 		amount = 0;
 		ObjectClass = nullptr;
 		Object = nullptr;

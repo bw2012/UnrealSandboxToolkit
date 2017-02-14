@@ -33,9 +33,11 @@ bool  UContainerComponent::isEmpty() {
 
 	for (int i = 0; i < Content.Num(); i++) {
 		FContainerStack stack = Content[i];
+		/*
 		if (stack.cid != 0) {
 			return false;
 		}
+		*/
 	}
 
 	return true;
@@ -48,14 +50,15 @@ bool UContainerComponent::AddStack(const FContainerStack Stack, const int SlotId
 
 	FContainerStack* StackPtr = &Content[SlotId];
 	StackPtr->amount = Stack.amount;
-	StackPtr->cid = Stack.cid;
 	StackPtr->ObjectClass = Stack.ObjectClass;
+	StackPtr->Object = Stack.Object;
 
 	return true;
 }
 
 
 bool UContainerComponent::addItemToInventory(ASandboxObject* item) {
+	/*
 	bool added = false;
 	for (int i = 0; i < Content.Num(); i++) {
 		FContainerStack* stack = &Content[i];
@@ -83,6 +86,9 @@ bool UContainerComponent::addItemToInventory(ASandboxObject* item) {
 	}
 	
 	return true;
+	*/
+
+	return false;
 }
 
 
@@ -94,29 +100,24 @@ FContainerStack* UContainerComponent::GetSlot(const int Slot) {
 	return &Content[Slot];
 }
 
-void UContainerComponent::DecreaseObjectsInContainer(int slot, int num) {
-	/*
-	FContainerStack* stack = getInventorySlot(slot);
+void UContainerComponent::DecreaseObjectsInContainer(int Slot, int Num) {
+	FContainerStack* Stack = GetSlot(Slot);
 
-	if (stack == NULL) {
+	if (Stack == NULL) {
 		return;
 	}
 
-	if (stack->amount > 0) {
-		stack->amount -= num;
+	if (Stack->amount > 0) {
+		Stack->amount -= Num;
 
-		if (stack->amount == 0) {
-			//playerInventory.Remove(slot);
-			stack->cid = -1;
+		if (Stack->amount == 0) {
+			Stack->clear();
 		}
 	}
-	*/
 }
 
 
 ASandboxObject* UContainerComponent::GetSandboxObjectFromContainer(int slot) {
-
-
 	return NULL;
 }
 
@@ -136,6 +137,7 @@ bool UContainerComponent::inventoryTransfer(int32 slot1, int32 slot2) {
 		stack2 = Content[slot2];
 	}
 
+	/*
 	if (stack1.cid == stack2.cid) {
 		ASandboxObject* obj = GetSandboxObjectFromContainer(slot2);
 		if (obj != NULL && obj->GetMaxStackSize() > 1) {
@@ -145,6 +147,7 @@ bool UContainerComponent::inventoryTransfer(int32 slot1, int32 slot2) {
 			return true;
 		}
 	} 
+	*/
 	
 	AddStack(stack1, slot2);
 	AddStack(stack2, slot1);
