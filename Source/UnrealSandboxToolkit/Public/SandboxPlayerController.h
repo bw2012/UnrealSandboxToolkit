@@ -47,6 +47,12 @@ public:
 	bool HasOpenContainer() { return OpenedObject != nullptr;  }
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	UContainerComponent* GetOpenedContainer() { return this->OpenedContainer; }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	ASandboxObject* GetOpenedObject() { return this->OpenedObject; }
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	void CloseObjectWithContainer();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")

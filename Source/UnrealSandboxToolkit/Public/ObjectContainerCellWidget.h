@@ -25,7 +25,7 @@ class UNREALSANDBOXTOOLKIT_API USandboxObjectContainerCellWidget : public UUserW
 public:	
 
 	UPROPERTY(EditAnywhere, Category = "SandboxInventory")
-	uint32 ContainerId;
+	uint32 ContainerId; // 100 is current opened object, other ids is reserved for backpack, pockets, and etc
 
 	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
 	FLinearColor SlotBorderColor(int32 SlotId);
@@ -40,13 +40,16 @@ public:
 	FString SlotGetAmountText(int32 SlotId);
 
 	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
-	bool SlotDrop(int32 SlotDropId, int32 SlotTargetId, AActor* SourceActor);
+	bool SlotDrop(int32 SlotDropId, int32 SlotTargetId, AActor* SourceActor, UContainerComponent* SourceContainer);
 
 	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
 	bool SlotIsEmpty(int32 SlotId);
 
 	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
 	AActor* GetOpenedObject();
+
+	UFUNCTION(BlueprintCallable, Category = "SandboxInventory")
+	UContainerComponent* GetOpenedContainer();
 
 protected:
 	UContainerComponent* GetContainer();

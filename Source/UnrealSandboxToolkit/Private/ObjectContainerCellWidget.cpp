@@ -35,15 +35,25 @@ FString USandboxObjectContainerCellWidget::SlotGetAmountText(int32 SlotId) {
 }
 
 UContainerComponent* USandboxObjectContainerCellWidget::GetContainer() {
-	APlayerController* PlayerController = GetOwningPlayer();
-	APawn* Pawn = PlayerController->GetPawn();
 
-	TArray<UContainerComponent*> Components;
-	Pawn->GetComponents<UContainerComponent>(Components);
+	if (ContainerId == 0) {
+		APawn* Pawn = GetOwningPlayer()->GetPawn();
 
-	for (UContainerComponent* Container : Components) {
-		// always use only first container
-		return Container;
+		TArray<UContainerComponent*> Components;
+		Pawn->GetComponents<UContainerComponent>(Components);
+
+		for (UContainerComponent* Container : Components) {
+			if (Container->GetName().Equals(TEXT("Inventory"))) {
+				return Container;
+			}
+		}
+	}
+
+	if (ContainerId == 100) { // opened object
+		ASandboxPlayerController* SandboxPC = Cast<ASandboxPlayerController>(GetOwningPlayer());
+		if (SandboxPC != nullptr) {
+			return SandboxPC->GetOpenedContainer();
+		}
 	}
 
 	return nullptr;
@@ -73,38 +83,103 @@ void USandboxObjectContainerCellWidget::SelectSlot(int32 SlotId) {
 
 }
 
-bool USandboxObjectContainerCellWidget::SlotDrop(int32 SlotDropId, int32 SlotTargetId, AActor* SourceActor) {
+bool USandboxObjectContainerCellWidget::SlotDrop(int32 SlotDropId, int32 SlotTargetId, AActor* SourceActor, UContainerComponent* SourceContainer) {
 	UE_LOG(LogTemp, Warning, TEXT("UI cell drop: drop id -> %d ---> target id -> %d"), SlotDropId, SlotTargetId);
 
-	APlayerController* PlayerController = GetOwningPlayer();
-	APawn* Pawn = PlayerController->GetPawn();
-
-	if (SourceActor == nullptr) {
+	if (ContainerId == 0 && SourceActor == nullptr) { // internal transfer
 		UContainerComponent* Container = GetContainer();
 		if (Container == NULL) {
 			return false;
 		}
 
-		FContainerStack TempStack;
+		if (SlotDropId == SlotTargetId) {
+			return false;
+		}
+
 		FContainerStack* StackSourcePtr = Container->GetSlot(SlotDropId);
 		FContainerStack* StackTargetPtr = Container->GetSlot(SlotTargetId);
 
+		FContainerStack StackSource;
+		FContainerStack StackTarget;
+
 		if (StackTargetPtr != NULL) {
-			TempStack = *StackTargetPtr;
+			StackTarget = *StackTargetPtr;
 		}
 
-		Container->AddStack(*StackSourcePtr, SlotTargetId);
-		Container->AddStack(TempStack, SlotDropId);
-	}
+		if (StackSourcePtr != NULL) {
+			StackSource = *StackSourcePtr;
+		}
 
+		if (StackTarget.ObjectClass != nullptr && StackSource.ObjectClass != nullptr) {
+			if (StackTarget.ObjectClass->GetName().Equals(StackSource.ObjectClass->GetName())) {
+				StackTargetPtr->Amount += StackSourcePtr->Amount;
+				StackSourcePtr->Clear();
+
+				return true;
+			}
+		}
+
+		Container->AddStack(StackSource, SlotTargetId);
+		Container->AddStack(StackTarget, SlotDropId);
+
+		return true;
+	} else {
+		if (SourceContainer == nullptr) {
+			return false;
+		}
+
+		UContainerComponent* TargetContainer = GetContainer();
+
+		FContainerStack* StackSourcePtr = SourceContainer->GetSlot(SlotDropId);
+		FContainerStack* StackTargetPtr = TargetContainer->GetSlot(SlotTargetId);
+
+		FContainerStack StackSource;
+		FContainerStack StackTarget;
+
+		if (StackTargetPtr != NULL) {
+			StackTarget = *StackTargetPtr;
+		}
+
+		if (StackSourcePtr != NULL) {
+			StackSource = *StackSourcePtr;
+		}
+
+		if (StackTarget.ObjectClass != nullptr && StackSource.ObjectClass != nullptr) {
+			if (StackTarget.ObjectClass->GetName().Equals(StackSource.ObjectClass->GetName())) {
+				StackTargetPtr->Amount += StackSourcePtr->Amount;
+				StackSourcePtr->Clear();
+
+				return true;
+			}
+		}
+
+		SourceContainer->AddStack(StackTarget, SlotDropId);
+		TargetContainer->AddStack(StackSource, SlotTargetId);
+	}
+	
 	return false;
 }
 
 bool USandboxObjectContainerCellWidget::SlotIsEmpty(int32 SlotId) {
-	return true;
+	return false;
 }
 
 
 AActor* USandboxObjectContainerCellWidget::GetOpenedObject() {
-	return NULL;
+	if (ContainerId == 100) { 
+		ASandboxPlayerController* SandboxPC = Cast<ASandboxPlayerController>(GetOwningPlayer());
+		if (SandboxPC != nullptr) {
+			return SandboxPC->GetOpenedObject();
+		}
+	}
+
+	if (ContainerId == 0) {
+		return GetOwningPlayer()->GetPawn();
+	}
+
+	return nullptr;
+}
+
+UContainerComponent* USandboxObjectContainerCellWidget::GetOpenedContainer() {
+	return GetContainer();
 }
