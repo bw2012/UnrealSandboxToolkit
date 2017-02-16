@@ -7,10 +7,24 @@
 #include "SandboxPlayerController.h"
 
 FLinearColor USandboxObjectContainerCellWidget::SlotBorderColor(int32 SlotId) {
-	ASandboxPlayerController* PlayerController = Cast<ASandboxPlayerController>(GetOwningPlayer());
-	if (PlayerController != NULL) {
-		if (PlayerController->CurrentInventorySlot == SlotId) {
-			return FLinearColor(0.1, 0.4, 1, 1);
+	if (ContainerId == 0) {
+		ASandboxPlayerController* PlayerController = Cast<ASandboxPlayerController>(GetOwningPlayer());
+		if (PlayerController != NULL) {
+			if (PlayerController->CurrentInventorySlot == SlotId) {
+				return FLinearColor(0.1, 0.4, 1, 1);
+			}
+		}
+	}
+
+	UContainerComponent* Container = GetContainer();
+	if (Container != NULL) {
+		FContainerStack* Stack = Container->GetSlot(SlotId);
+		if (Stack != NULL) {
+			if (Stack->Object != nullptr) {
+				if (Stack->Amount > 0) {
+					return FLinearColor(0.4, 0.4, 0.4, 1);
+				}
+			}
 		}
 	}
 
@@ -23,7 +37,7 @@ FString USandboxObjectContainerCellWidget::SlotGetAmountText(int32 SlotId) {
 	if (Container != NULL) {
 		FContainerStack* Stack = Container->GetSlot(SlotId);
 		if (Stack != NULL) {
-			if (Stack->ObjectClass != NULL) {
+			if (Stack->ObjectClass != nullptr || Stack->Object != nullptr) {
 				if (Stack->Amount > 0) {
 					return FString::Printf(TEXT("%d"), Stack->Amount);
 				}
@@ -35,7 +49,6 @@ FString USandboxObjectContainerCellWidget::SlotGetAmountText(int32 SlotId) {
 }
 
 UContainerComponent* USandboxObjectContainerCellWidget::GetContainer() {
-
 	if (ContainerId == 0) {
 		APawn* Pawn = GetOwningPlayer()->GetPawn();
 
@@ -70,6 +83,13 @@ UTexture2D* USandboxObjectContainerCellWidget::GetSlotTexture(int32 SlotId) {
 					ASandboxObject* DefaultObject = Cast<ASandboxObject>(Stack->ObjectClass->GetDefaultObject());
 					if (DefaultObject != nullptr) {
 						return DefaultObject->IconTexture;
+					}
+				}
+
+				if (Stack->Object != nullptr) {
+					ASandboxObject* Object = Cast<ASandboxObject>(Stack->Object);
+					if (Object != nullptr) {
+						return Object->IconTexture;
 					}
 				}
 			}

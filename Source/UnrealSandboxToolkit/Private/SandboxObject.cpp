@@ -6,6 +6,8 @@
 ASandboxObject::ASandboxObject() {
 	PrimaryActorTick.bCanEverTick = true;
 	SandboxRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SandboxRootMesh"));
+	MaxStackSize = 100;
+	bStackable = true;
 }
 
 void ASandboxObject::BeginPlay() {
@@ -33,6 +35,17 @@ int ASandboxObject::GetSandboxCid() {
 }
 
 int ASandboxObject::GetMaxStackSize() {
+	if (!bStackable) {
+		return 1;
+	}
+
+	TArray<UContainerComponent*> Components;
+	this->GetComponents<UContainerComponent>(Components);
+
+	for (UContainerComponent* Container : Components) {
+			return 1;
+	}
+
 	return 100; // empty object
 }
 

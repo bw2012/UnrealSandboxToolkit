@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "GameFramework/Actor.h"
 #include "ContainerComponent.h"
+#include "SandboxComponent.h"
 #include "SandboxObject.generated.h"
 
 UCLASS()
@@ -22,6 +23,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	UTexture2D* IconTexture;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Inventory")
+	bool bStackable;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Inventory")
+	uint32 MaxStackSize;
 
 	virtual void BeginPlay() override;
 
@@ -50,5 +57,21 @@ public:
 	virtual void informTerrainChange(int32 item);
     
     virtual UContainerComponent* GetContainer(){ return Container; }
+
+	void CopyTo(ASandboxObject* Target) {
+		TArray<USandboxComponent*> TargetComponents;
+		Target->GetComponents<USandboxComponent>(TargetComponents);
+
+		for (USandboxComponent* TargetComponent : TargetComponents) {
+			TArray<USandboxComponent*> SourceComponents;
+			this->GetComponents<USandboxComponent>(SourceComponents);
+
+			for (USandboxComponent* SourceComponent : SourceComponents) {
+				if (SourceComponent->GetName().Equals(TargetComponent->GetName())) {
+					SourceComponent->CopyTo(TargetComponent);
+				}
+			}
+		}
+	}
 
 };

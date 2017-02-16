@@ -4,6 +4,7 @@
 
 #include "Engine.h"
 #include "Components/ActorComponent.h"
+#include "SandboxComponent.h"
 #include "ContainerComponent.generated.h"
 
 class ASandboxObject;
@@ -34,7 +35,7 @@ struct FContainerStack {
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UNREALSANDBOXTOOLKIT_API UContainerComponent : public UActorComponent
+class UNREALSANDBOXTOOLKIT_API UContainerComponent : public USandboxComponent
 {
 	GENERATED_BODY()
 
@@ -64,4 +65,11 @@ public:
     bool inventoryTransfer(int32 slot1, int32 slot2);
 
 	bool isEmpty();
+
+	void CopyTo(USandboxComponent* Target) {
+		UContainerComponent* Trg = Cast<UContainerComponent>(Target);
+		if (Trg != nullptr) {
+			Trg->Content = this->Content;
+		}
+	}
 };

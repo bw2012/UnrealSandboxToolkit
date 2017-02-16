@@ -31,13 +31,11 @@ bool  UContainerComponent::isEmpty() {
 		return true;
 	}
 
-	for (int i = 0; i < Content.Num(); i++) {
-		FContainerStack stack = Content[i];
-		/*
-		if (stack.cid != 0) {
+	for (int Idx = 0; Idx < Content.Num(); Idx++) {
+		FContainerStack Stack = Content[Idx];
+		if (Stack.Amount > 0 ) {
 			return false;
 		}
-		*/
 	}
 
 	return true;
@@ -62,18 +60,16 @@ bool UContainerComponent::AddObject(ASandboxObject* Obj) {
 		return false;
 	}
 
+	uint32 MaxStackSize = Obj->GetMaxStackSize();
+
 	int FirstEmptySlot = -1;
 	bool bIsAdded = false;
 	for (int Idx = 0; Idx < Content.Num(); Idx++) {
 		FContainerStack* Stack = &Content[Idx];
 
-		//TODO unique objects (max stack size = 1)
 		//TODO check inventory max volume and mass
-
 		if (Stack->Amount != 0) {
-			if (Stack->ObjectClass != nullptr) {
-				UE_LOG(LogTemp, Warning, TEXT("%s - %s "), *Stack->ObjectClass->GetName(), *Obj->GetClass()->GetName());
-
+			if (Stack->ObjectClass != nullptr && MaxStackSize > 1) {
 				if (Stack->ObjectClass->GetName().Equals(Obj->GetClass()->GetName())) {
 					Stack->Amount++;
 					bIsAdded = true;
@@ -83,6 +79,10 @@ bool UContainerComponent::AddObject(ASandboxObject* Obj) {
 		} else {
 			if (FirstEmptySlot < 0) {
 				FirstEmptySlot = Idx;
+
+				if (MaxStackSize == 1) {
+					break;
+				}
 			}
 		}
 	}
@@ -90,13 +90,24 @@ bool UContainerComponent::AddObject(ASandboxObject* Obj) {
 	if (!bIsAdded) {
 		if (FirstEmptySlot >= 0) {
 			FContainerStack* Stack = &Content[FirstEmptySlot];
-
 			Stack->Amount = 1;
-			Stack->ObjectClass = Obj->GetClass();
+
+			if (MaxStackSize == 1) {
+				Stack->Object = Obj;
+			} else {
+				Stack->ObjectClass = Obj->GetClass();
+			}
 		} else {
 			FContainerStack NewStack;
-			NewStack.ObjectClass = Obj->GetClass();
 			NewStack.Amount = 1;
+
+			if (MaxStackSize == 1) {
+				NewStack.Object = Obj;
+			}
+			else {
+				NewStack.ObjectClass = Obj->GetClass();
+			}
+
 			Content.Add(NewStack);
 		}
 	}

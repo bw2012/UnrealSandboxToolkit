@@ -252,6 +252,8 @@ void ASandboxPlayerController::PutCurrentInventoryObjectToWorld() {
 		if (Stack != nullptr) {
 			if (Stack->Amount > 0) {
 				TSubclassOf<ASandboxObject>	ObjectClass = Stack->ObjectClass;
+				ASandboxObject* Object = Stack->Object;
+
 				if (ObjectClass != nullptr) {
 					FHitResult ActionPoint = TracePlayerActionPoint();
 					if (ActionPoint.bBlockingHit) {
@@ -265,6 +267,27 @@ void ASandboxPlayerController::PutCurrentInventoryObjectToWorld() {
 						if (NewObject != nullptr) {
 							Inventory->DecreaseObjectsInContainer(CurrentInventorySlot, 1);
 						}
+
+						return;
+					}
+				}
+
+				if (Object != nullptr) {
+					FHitResult ActionPoint = TracePlayerActionPoint();
+					if (ActionPoint.bBlockingHit) {
+						FVector test = ActionPoint.Location;
+						test.Z = test.Z + 100;
+
+						UClass* Cls = Object->GetClass();
+						FTransform Transform(FRotator(0), ActionPoint.Location, FVector(1));
+						ASandboxObject* NewObject = (ASandboxObject*)GetWorld()->SpawnActor(Cls, &Transform);
+
+						if (NewObject != nullptr) {
+							Object->CopyTo(NewObject);
+							Inventory->DecreaseObjectsInContainer(CurrentInventorySlot, 1);
+						}
+
+						return;
 					}
 				}
 			}
