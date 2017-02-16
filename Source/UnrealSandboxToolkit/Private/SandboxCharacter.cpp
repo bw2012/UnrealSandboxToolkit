@@ -367,6 +367,10 @@ void ASandboxCharacter::Test() {
 
 void ASandboxCharacter::Kill() {
 	if (!IsDead()) {
+		if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
+			InitThirdPersonView();
+		}
+
 		InitialMeshTransform = GetMesh()->GetRelativeTransform();
 		GetMesh()->SetSimulatePhysics(true);
 		GetMesh()->SetAllBodiesBelowPhysicsBlendWeight(TEXT("pelvis"), 1);
@@ -384,5 +388,11 @@ void ASandboxCharacter::LiveUp() {
 }
 
 void ASandboxCharacter::OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult) {
-	//UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f %f %f"), GetCapsuleComponent()->GetComponentVelocity().X, GetCapsuleComponent()->GetComponentVelocity().Y, GetCapsuleComponent()->GetComponentVelocity().Z);
+	float HitVelocity = GetCapsuleComponent()->GetComponentVelocity().Size();
+
+	UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f"), HitVelocity);
+	// TODO const threshold
+	if (HitVelocity > 680) {
+		Kill();
+	}
 }
