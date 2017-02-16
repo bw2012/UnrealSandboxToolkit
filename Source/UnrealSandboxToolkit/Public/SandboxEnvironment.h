@@ -90,5 +90,7 @@ private:
 	float TimeOffset = 0;
 
 	void PerformDayNightCycle();
+
+	float LastSunHeight;
 	
 };

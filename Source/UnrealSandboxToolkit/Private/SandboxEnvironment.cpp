@@ -21,6 +21,8 @@ ASandboxEnvironment::ASandboxEnvironment() {
 	Lat = 53.91;
 
 	TimeZone = +3;
+
+	LastSunHeight = -1;
 }
 
 void ASandboxEnvironment::BeginPlay() {
@@ -76,14 +78,17 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 
 		UFloatProperty* SunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
 		if (SunHeightFloatProp != NULL) {
-			float SunHeightFloatVal = SunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
+			float SunHeight = SunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
+
+			if (LastSunHeight < 0 ) {
+				LastSunHeight = SunHeight;
+			}
 
 			ULightComponent* LightComponent = DirectionalLightSource->GetLightComponent();
 			if (LightComponent != NULL) {
-				if (SunHeightFloatVal > 0.01) { //0.08 if mobile (2.75)
-					LightComponent->SetIntensity(1.75 + 2 * SunHeightFloatVal);
-				}
-				else {
+				if (SunHeight > 0.01) { //0.08 if mobile (2.75)
+					LightComponent->SetIntensity(1.75 + 2 * SunHeight);
+				} else {
 					LightComponent->SetIntensity(0);
 				}
 			}
@@ -92,8 +97,8 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 				// set sky light intensity
 				USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
 				if (SkyLightComponent != NULL) {
-					if (SunHeightFloatVal > 0) {
-						SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeightFloatVal;
+					if (SunHeight > 0) {
+						SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeight;
 					} else {
 						SkyLightComponent->Intensity = NightSkyLigthIntensity; //night
 					}
@@ -102,8 +107,14 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 						SkyLightComponent->RecaptureSky();
 						LastSkyIntensity = SkyLightComponent->Intensity;
 					}
+
+					if ((LastSunHeight > 0 && SunHeight < 0) || (LastSunHeight < 0 && SunHeight > 0)) {
+						SkyLightComponent->RecaptureSky();
+					}
 				}
 			}
+
+			LastSunHeight = SunHeight;
 		}
 	}
 }
