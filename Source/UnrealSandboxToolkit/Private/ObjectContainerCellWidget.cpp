@@ -16,17 +16,19 @@ FLinearColor USandboxObjectContainerCellWidget::SlotBorderColor(int32 SlotId) {
 		}
 	}
 
+	/*
 	UContainerComponent* Container = GetContainer();
 	if (Container != NULL) {
 		FContainerStack* Stack = Container->GetSlot(SlotId);
 		if (Stack != NULL) {
 			if (Stack->Object != nullptr) {
 				if (Stack->Amount > 0) {
-					return FLinearColor(0.4, 0.4, 0.4, 1);
+					return FLinearColor(0.97, 1, 0.4, 1);
 				}
 			}
 		}
 	}
+	*/
 
 	return FLinearColor(0, 0, 0, 0);
 }
