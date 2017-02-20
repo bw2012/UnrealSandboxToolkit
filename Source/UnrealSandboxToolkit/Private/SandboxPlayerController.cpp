@@ -107,8 +107,10 @@ void ASandboxPlayerController::OpenCrosshairWidget() {
 	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
 
 	if (Pawn != nullptr) {
-		CrosshairWidgetInstance = CreateWidget<UUserWidget>(this, Pawn->CrosshairWidget);
-		CrosshairWidgetInstance->AddToViewport();
+		if (Pawn->CrosshairWidget != nullptr) {
+			CrosshairWidgetInstance = CreateWidget<UUserWidget>(this, Pawn->CrosshairWidget);
+			CrosshairWidgetInstance->AddToViewport();
+		}
 	}
 }
 
