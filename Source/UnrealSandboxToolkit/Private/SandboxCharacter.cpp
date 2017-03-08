@@ -3,6 +3,7 @@
 #include "UnrealSandboxToolkitPrivatePCH.h"
 #include "SandboxCharacter.h"
 #include "SandboxPlayerController.h"
+#include "VitalSystemComponent.h"
 
 
 ASandboxCharacter::ASandboxCharacter() {
@@ -64,6 +65,14 @@ void ASandboxCharacter::BeginPlay() {
 	if (InitialView == PlayerView::FIRST_PERSON) {
 		InitFirstPersonView();
 	}
+
+	TArray<UVitalSystemComponent*> Components;
+	GetComponents<UVitalSystemComponent>(Components);
+
+	for (UVitalSystemComponent* VitalSysCmp : Components) {
+		VitalSysPtr = VitalSysCmp;
+		break;
+	}
 }
 
 void ASandboxCharacter::Tick( float DeltaTime ) {
@@ -104,7 +113,6 @@ void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 
 void ASandboxCharacter::BoostOn() {
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-
 }
 
 void ASandboxCharacter::BoostOff() {
@@ -390,9 +398,10 @@ void ASandboxCharacter::LiveUp() {
 void ASandboxCharacter::OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult) {
 	float HitVelocity = GetCapsuleComponent()->GetComponentVelocity().Size();
 
-	UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f"), HitVelocity);
-	// TODO const threshold
-	if (HitVelocity > 680) {
-		Kill();
+	//UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f"), HitVelocity);
+	if (VitalSysPtr != nullptr) {
+		if (HitVelocity > 680) {
+			Kill();
+		}
 	}
 }

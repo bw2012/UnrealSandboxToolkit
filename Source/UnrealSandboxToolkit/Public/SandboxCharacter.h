@@ -9,6 +9,7 @@
 #include "SandboxCharacter.generated.h"
 
 
+class UVitalSystemComponent;
 
 UENUM(BlueprintType)
 enum class PlayerView : uint8 {
@@ -95,6 +96,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UnrealSandbox UI")
 	TSubclassOf<UUserWidget> CrosshairWidget;
 
+	/*
+	UFUNCTION(BlueprintImplementableEvent, Category = "DmgSystem")
+	void TakeDamage(float DamageLevel);
+	*/
+
 private:
 	PlayerView CurrentPlayerView;
 
@@ -104,6 +110,9 @@ private:
 
 	UFUNCTION()
 	void OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult);
+
+	UPROPERTY()
+	UVitalSystemComponent* VitalSysPtr;
 
 protected:
 	void ZoomIn();

@@ -3,6 +3,7 @@
 #include "UnrealSandboxToolkitPrivatePCH.h"
 #include "SandboxObject.h"
 #include "ContainerComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values for this component's properties
@@ -177,4 +178,8 @@ bool UContainerComponent::inventoryTransfer(int32 slot1, int32 slot2) {
 	AddStack(stack2, slot1);
 	
 	return true;
+}
+
+void UContainerComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const {
+	DOREPLIFETIME(UContainerComponent, Content);
 }
