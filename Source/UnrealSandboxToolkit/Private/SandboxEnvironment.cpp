@@ -27,7 +27,7 @@ ASandboxEnvironment::ASandboxEnvironment() {
 
 void ASandboxEnvironment::BeginPlay() {
 	Super::BeginPlay();
-	
+
 	if (DirectionalLightSource != NULL && SkySphere != NULL){
 		DirectionalLightSource->SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	}
@@ -152,7 +152,11 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool
 
 	tm ptm;
 
+#ifdef _MSC_VER
 	gmtime_s(&ptm, &rawtime);
+#else
+	ptm = *gmtime_r(&rawtime, &ptm);
+#endif
 
 	SandboxGameTime Time;
 	Time.hours = ptm.tm_hour;

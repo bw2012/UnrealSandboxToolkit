@@ -1,7 +1,7 @@
 // This file is available in electronic form at http://www.psa.es/sdg/sunpos.htm
 
 #include "UnrealSandboxToolkitPrivatePCH.h"
-#include "sunpos.h"
+#include "SunPos.h"
 #include <math.h>
 
 void sunpos(cTime udtTime, cLocation udtLocation, cSunCoordinates *udtSunCoordinates)
@@ -18,7 +18,7 @@ void sunpos(cTime udtTime, cLocation udtLocation, cSunCoordinates *udtSunCoordin
 	double dY;
 	double dX;
 
-	// Calculate difference in days between the current Julian Day 
+	// Calculate difference in days between the current Julian Day
 	// and JD 2451545.0, which is noon 1 January 2000 Universal Time
 	{
 		double dJulianDate;
@@ -33,12 +33,12 @@ void sunpos(cTime udtTime, cLocation udtLocation, cSunCoordinates *udtSunCoordin
 			- 2 - 12 * liAux1)) / 12 - (3 * ((udtTime.iYear + 4900
 				+ liAux1) / 100)) / 4 + udtTime.iDay - 32075;
 		dJulianDate = (double)(liAux2)-0.5 + dDecimalHours / 24.0;
-		// Calculate difference between current Julian Day and JD 2451545.0 
+		// Calculate difference between current Julian Day and JD 2451545.0
 		dElapsedJulianDays = dJulianDate - 2451545.0;
 	}
 
-	// Calculate ecliptic coordinates (ecliptic longitude and obliquity of the 
-	// ecliptic in radians but without limiting the angle to be less than 2*Pi 
+	// Calculate ecliptic coordinates (ecliptic longitude and obliquity of the
+	// ecliptic in radians but without limiting the angle to be less than 2*Pi
 	// (i.e., the result may be greater than 2*Pi)
 	{
 		double dMeanLongitude;
@@ -54,8 +54,8 @@ void sunpos(cTime udtTime, cLocation udtLocation, cSunCoordinates *udtSunCoordin
 			+ 0.0000396*cos(dOmega);
 	}
 
-	// Calculate celestial coordinates ( right ascension and declination ) in radians 
-	// but without limiting the angle to be less than 2*Pi (i.e., the result may be 
+	// Calculate celestial coordinates ( right ascension and declination ) in radians
+	// but without limiting the angle to be less than 2*Pi (i.e., the result may be
 	// greater than 2*Pi)
 	{
 		double dSin_EclipticLongitude;
