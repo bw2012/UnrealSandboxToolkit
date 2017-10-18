@@ -19,7 +19,7 @@ struct FContainerStack {
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ASandboxObject>	ObjectClass;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintInternalUseOnly)
 	ASandboxObject* Object;
 
 	FContainerStack() {

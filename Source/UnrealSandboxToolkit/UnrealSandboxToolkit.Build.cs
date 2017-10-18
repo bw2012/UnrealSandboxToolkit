@@ -4,8 +4,8 @@ using UnrealBuildTool;
 
 public class UnrealSandboxToolkit : ModuleRules
 {
-	public UnrealSandboxToolkit(TargetInfo Target)
-	{
+	public UnrealSandboxToolkit(ReadOnlyTargetRules Target) : base(Target)
+    {
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
