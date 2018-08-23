@@ -1,8 +1,8 @@
 
 
 #include "UnrealSandboxToolkitPrivatePCH.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "SandboxPlayerController.h"
-#include "AI/Navigation/NavigationSystem.h"
 #include "SandboxCharacter.h"
 #include "SandboxObject.h"
 #include "ContainerComponent.h"
@@ -62,11 +62,9 @@ void ASandboxPlayerController::MoveToTouchLocation(const ETouchIndex::Type Finge
 void ASandboxPlayerController::SetNewMoveDestination(const FVector DestLocation) {
 	APawn* const Pawn = GetPawn();
 	if (Pawn) {
-		UNavigationSystem* const NavSys = GetWorld()->GetNavigationSystem();
 		float const Distance = FVector::Dist(DestLocation, Pawn->GetActorLocation());
-
-		if (NavSys && (Distance > 120.0f)) {
-			NavSys->SimpleMoveToLocation(this, DestLocation);
+		if (Distance > 120.0f) {
+			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
 		}
 	}
 }

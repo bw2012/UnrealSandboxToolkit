@@ -27,7 +27,7 @@ public class UnrealSandboxToolkit : ModuleRules
 			new string[]
 			{
 				"Core",
-				"UMG", "Slate", "SlateCore"
+				"UMG", "Slate", "SlateCore", "NavigationSystem", "AIModule"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
