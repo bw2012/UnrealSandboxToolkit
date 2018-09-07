@@ -14,10 +14,9 @@ Tested with Unreal Engine 4.14.2
 * character first-person/third-person/top-down runtime change
 
 
+![day_night](https://raw.githubusercontent.com/bw2012/UnrealSandboxToolkit/master/minsk_summer.gif)
 
-![day_night](http://www.unrealsandbox.com/daynight_cycle2.gif)
-
-![day_night](http://www.unrealsandbox.com/daynight_cycle3.gif)
+![day_night](https://raw.githubusercontent.com/bw2012/UnrealSandboxToolkit/master/spb_winter.gif)
 
 # License
 MIT license
