@@ -131,8 +131,8 @@ void ASandboxPlayerController::ToggleView() {
 	} 
 }
 
-void ASandboxPlayerController::Possess(APawn* aPawn) {
-	Super::Possess(aPawn);
+void ASandboxPlayerController::OnPossess(APawn* aPawn) {
+	Super::OnPossess(aPawn);
 
 	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(aPawn);
 	if (Pawn != NULL) {
@@ -176,7 +176,7 @@ FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
 		const FVector EndTrace = StartTrace + (Direction * MaxUseDistance);
 
 		FCollisionQueryParams TraceParams(FName(TEXT("")), true, this);
-		TraceParams.bTraceAsyncScene = true;
+		//TraceParams.bTraceAsyncScene = true;
 		TraceParams.bReturnPhysicalMaterial = false;
 		TraceParams.bTraceComplex = true;
 		TraceParams.AddIgnoredActor(Pawn);
