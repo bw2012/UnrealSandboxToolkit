@@ -20,7 +20,7 @@ public:
 
 	ASandboxPlayerController();
 
-	virtual void Possess(APawn* aPawn) override;
+	virtual void OnPossess(APawn* aPawn) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	void BlockGameInput();

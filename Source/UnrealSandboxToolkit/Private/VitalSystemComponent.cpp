@@ -6,7 +6,7 @@
 
 
 UVitalSystemComponent::UVitalSystemComponent() {
-	bWantsBeginPlay = true;
+//	bWantsBeginPlay = true;
 	PrimaryComponentTick.bCanEverTick = false;
 
 	Health = 100;
