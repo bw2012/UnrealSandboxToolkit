@@ -4,7 +4,7 @@ UE4 plugin for very quick start
 
 This plugin contains miscellaneous tools for sandbox game development
 
-Tested with Unreal Engine 4.14.2
+Tested with Unreal Engine 4.24
 
 **Work in progress**
 
