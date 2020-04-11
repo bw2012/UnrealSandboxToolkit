@@ -16,6 +16,13 @@ ASandboxPlayerController::ASandboxPlayerController() {
 void ASandboxPlayerController::PlayerTick(float DeltaTime) {
 	Super::PlayerTick(DeltaTime);
 
+	FHitResult Res = TracePlayerActionPoint();
+	OnTracePlayerActionPoint(Res);
+	if (Res.bBlockingHit) {
+		AActor* SelectedActor = Res.Actor.Get();
+		SelectActionObject(SelectedActor);
+	}
+
 	if (bMoveToMouseCursor)	{
 		MoveToMouseCursor();
 	}
@@ -42,8 +49,7 @@ void ASandboxPlayerController::MoveToMouseCursor() {
 	FHitResult Hit;
 	GetHitResultUnderCursor(ECC_WorldStatic, false, Hit);
 
-	if (Hit.bBlockingHit)
-	{
+	if (Hit.bBlockingHit) {
 		// We hit something, move there
 		SetNewMoveDestination(Hit.ImpactPoint);
 	}
@@ -70,17 +76,17 @@ void ASandboxPlayerController::SetNewMoveDestination(const FVector DestLocation)
 }
 
 void ASandboxPlayerController::SetDestinationPressed() {
-	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
-	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) return;
-	if (pawn->IsDead()) return;
+	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
+	if (Pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) return;
+	if (Pawn->IsDead()) return;
 
 	bMoveToMouseCursor = true;
 }
 
 void ASandboxPlayerController::SetDestinationReleased() {
-	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
-	if (pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) return;
-	if (pawn->IsDead()) return;
+	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
+	if (Pawn->GetSandboxPlayerView() != PlayerView::TOP_DOWN) return;
+	if (Pawn->IsDead()) return;
 
 	bMoveToMouseCursor = false;
 }
@@ -120,13 +126,14 @@ void ASandboxPlayerController::CloseCrosshairWidget() {
 }
 
 void ASandboxPlayerController::ToggleView() {
-	ASandboxCharacter* pawn = Cast<ASandboxCharacter>(GetCharacter());
+	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
 
-	if (pawn->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
-		pawn->InitThirdPersonView();
+	if (Pawn->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Pawn->GetActorLocation()); //abort move
+		Pawn->InitThirdPersonView();
 		bShowMouseCursor = false;
-	} else if (pawn->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
-		pawn->InitTopDownView();
+	} else if (Pawn->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
+		Pawn->InitTopDownView();
 		bShowMouseCursor = true;
 	} 
 }
@@ -178,7 +185,7 @@ FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
 		FCollisionQueryParams TraceParams(FName(TEXT("")), true, this);
 		//TraceParams.bTraceAsyncScene = true;
 		TraceParams.bReturnPhysicalMaterial = false;
-		TraceParams.bTraceComplex = true;
+		TraceParams.bTraceComplex = false;
 		TraceParams.AddIgnoredActor(Pawn);
 
 		FHitResult Hit(ForceInit);
@@ -189,7 +196,7 @@ FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
 
 	if (Pawn->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
 		FHitResult Hit;
-		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+		GetHitResultUnderCursor(ECC_Camera, false, Hit);
 		return Hit;
 	}
 
@@ -245,6 +252,9 @@ UContainerComponent* ASandboxPlayerController::GetInventory() {
 }
 
 void ASandboxPlayerController::PutCurrentInventoryObjectToWorld() {
+	ASandboxCharacter* Pawn = Cast<ASandboxCharacter>(GetCharacter());
+	if (Pawn->IsDead()) return;
+
 	UContainerComponent* Inventory = GetInventory();
 
 	if (Inventory != nullptr) {
@@ -336,4 +346,9 @@ bool ASandboxPlayerController::OpenObjectWithContainer() {
 void ASandboxPlayerController::CloseObjectWithContainer() {
 	this->OpenedObject = nullptr;
 	this->OpenedContainer = nullptr;
+}
+
+
+void ASandboxPlayerController::OnTracePlayerActionPoint(const FHitResult& Res) {
+
 }

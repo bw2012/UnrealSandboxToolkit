@@ -3,6 +3,7 @@
 #include "UnrealSandboxToolkitPrivatePCH.h"
 #include "ContainerComponent.h"
 #include "SandboxObject.h"
+#include "SandboxCharacter.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -14,18 +15,26 @@ UContainerComponent::UContainerComponent() {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 // Called when the game starts
 void UContainerComponent::BeginPlay() {
 	Super::BeginPlay();
 
 }
 
-
 // Called every frame
 void UContainerComponent::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 }
+
+bool UContainerComponent::IsOwnerAdmin() {
+	ASandboxCharacter* SandboxCharacter = Cast<ASandboxCharacter>(GetOwner());
+	if (SandboxCharacter) {
+		return SandboxCharacter->bIsAdmin;
+	}
+
+	return true;
+}
+
 
 bool  UContainerComponent::isEmpty() {
 	if (Content.Num() == 0) {
@@ -72,7 +81,7 @@ bool UContainerComponent::AddObject(ASandboxObject* Obj) {
 		if (Stack->Amount != 0) {
 			if (Stack->ObjectClass != nullptr && MaxStackSize > 1) {
 				if (Stack->ObjectClass->GetName().Equals(Obj->GetClass()->GetName())) {
-					Stack->Amount++;
+					if (!IsOwnerAdmin()) { Stack->Amount++; }
 					bIsAdded = true;
 					break;
 				}
@@ -126,18 +135,15 @@ FContainerStack* UContainerComponent::GetSlot(const int Slot) {
 }
 
 void UContainerComponent::DecreaseObjectsInContainer(int Slot, int Num) {
+	if (IsOwnerAdmin()) { return; }
+
 	FContainerStack* Stack = GetSlot(Slot);
 
-	if (Stack == NULL) {
-		return;
-	}
+	if (Stack == NULL) { return; }
 
 	if (Stack->Amount > 0) {
 		Stack->Amount -= Num;
-
-		if (Stack->Amount == 0) {
-			Stack->Clear();
-		}
+		if (Stack->Amount == 0) { Stack->Clear(); }
 	}
 }
 

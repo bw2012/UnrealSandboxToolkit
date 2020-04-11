@@ -14,14 +14,10 @@ ASandboxEnvironment::ASandboxEnvironment() {
 	NightSkyLigthIntensity = 0.01;
 	LastSkyIntensity = 0;
 	RecaptureSkyTreshold = 0.5f;
-
 	bEnableDayNightCycle = true;
-
 	Lng = 27.55;
 	Lat = 53.91;
-
 	TimeZone = +3;
-
 	LastSunHeight = -1;
 }
 
@@ -70,60 +66,67 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 
 	sunpos(Time, GeoLoc, &SunPosition);
 
-	if (DirectionalLightSource != NULL && SkySphere != NULL) {
+	if (DirectionalLightSource != NULL) {
 		DirectionalLightSource->SetActorRotation(FRotator(-(90 - SunPosition.dZenithAngle), SunPosition.dAzimuth, 0.0f));
 
-		FOutputDeviceNull Ar;
-		SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), Ar, NULL, true);
+		if (SkySphere != NULL) {
+			FOutputDeviceNull Ar;
+			SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), Ar, NULL, true);
 
-		UFloatProperty* SunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
-		if (SunHeightFloatProp != NULL) {
-			float SunHeight = SunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
+			UFloatProperty* SunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
+			if (SunHeightFloatProp != NULL) {
+				float SunHeight = SunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
 
-			if (LastSunHeight < 0 ) {
+				if (LastSunHeight < 0) {
+					LastSunHeight = SunHeight;
+				}
+
+				ULightComponent* LightComponent = DirectionalLightSource->GetLightComponent();
+				if (LightComponent != NULL) {
+					if (SunHeight > 0.01) { //0.08 if mobile (2.75)
+						LightComponent->SetIntensity(1.75 + 2 * SunHeight);
+					} else {
+						LightComponent->SetIntensity(0);
+					}
+				}
+
+				if (SkyLight != NULL) {
+					// set sky light intensity
+					USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
+					if (SkyLightComponent != NULL) {
+						if (SunHeight > 0) {
+							SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeight;
+						} else {
+							SkyLightComponent->Intensity = NightSkyLigthIntensity; //night
+						}
+
+						if (FMath::Abs(SkyLightComponent->Intensity - LastSkyIntensity) > RecaptureSkyTreshold) {
+							SkyLightComponent->RecaptureSky();
+							LastSkyIntensity = SkyLightComponent->Intensity;
+						}
+
+						if ((LastSunHeight > 0 && SunHeight < 0) || (LastSunHeight < 0 && SunHeight > 0)) {
+							SkyLightComponent->RecaptureSky();
+						}
+					}
+				}
+
 				LastSunHeight = SunHeight;
 			}
-
-			ULightComponent* LightComponent = DirectionalLightSource->GetLightComponent();
-			if (LightComponent != NULL) {
-				if (SunHeight > 0.01) { //0.08 if mobile (2.75)
-					LightComponent->SetIntensity(1.75 + 2 * SunHeight);
-				} else {
-					LightComponent->SetIntensity(0);
-				}
-			}
-
+		} else {
 			if (SkyLight != NULL) {
-				// set sky light intensity
 				USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
 				if (SkyLightComponent != NULL) {
-					if (SunHeight > 0) {
-						SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeight;
-					} else {
-						SkyLightComponent->Intensity = NightSkyLigthIntensity; //night
-					}
-
-					if (FMath::Abs(SkyLightComponent->Intensity - LastSkyIntensity) > RecaptureSkyTreshold) {
-						SkyLightComponent->RecaptureSky();
-						LastSkyIntensity = SkyLightComponent->Intensity;
-					}
-
-					if ((LastSunHeight > 0 && SunHeight < 0) || (LastSunHeight < 0 && SunHeight > 0)) {
-						SkyLightComponent->RecaptureSky();
-					}
+					SkyLightComponent->RecaptureSky();
 				}
 			}
-
-			LastSunHeight = SunHeight;
 		}
 	}
 }
 
-
 float ASandboxEnvironment::ClcGameTime(float RealServerTime) {
 	return ((RealServerTime)* TimeSpeed) + TimeOffset;
 }
-
 
 SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
 	long input_seconds = (long)(ClcGameTime(RealServerTime));
@@ -145,11 +148,8 @@ SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
 SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool bAccordingTimeZone) {
 	static const long InitialOffset = 60 * 60 * 12; // always start game at 12:00
 	long TimezoneOffset = bAccordingTimeZone ? 60 * 60 * TimeZone : 0;
-
 	long input_seconds = (int)(ClcGameTime(RealServerTime) + InitialOffset + TimezoneOffset);
-
 	time_t rawtime = (time_t)input_seconds;
-
 	tm ptm;
 
 #ifdef _MSC_VER
@@ -162,10 +162,8 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool
 	Time.hours = ptm.tm_hour;
 	Time.minutes = ptm.tm_min;
 	Time.seconds = ptm.tm_sec;
-
 	return Time;
 }
-
 
 void ASandboxEnvironment::SandboxSetTimeOffset(float Offset) {
 	TimeOffset = Offset;

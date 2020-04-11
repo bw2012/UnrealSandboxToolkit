@@ -40,7 +40,7 @@ public class UnrealSandboxToolkit : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-                "UMG"
+                "UMG", "Json", "JsonUtilities"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

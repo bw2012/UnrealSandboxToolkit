@@ -72,4 +72,8 @@ public:
 			Trg->Content = this->Content;
 		}
 	}
+
+private:
+	bool IsOwnerAdmin();
+
 };

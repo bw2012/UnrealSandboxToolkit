@@ -8,7 +8,7 @@
 #include "SandboxComponent.h"
 #include "SandboxObject.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class UNREALSANDBOXTOOLKIT_API ASandboxObject : public AActor {
 	GENERATED_BODY()
 	
@@ -38,7 +38,9 @@ public:
 
 	virtual FString GetSandboxName();
 
-	virtual int GetSandboxCid();
+	virtual int GetSandboxClassId();
+
+	virtual uint64 GetSandboxTypeId();
 
 	virtual int GetMaxStackSize();
 
@@ -46,11 +48,11 @@ public:
 	
 	virtual UTexture2D* GetSandboxIconTexture();
 
-	virtual void tickInInventoryActive(float DeltaTime, UWorld* w, FHitResult& hit);
+	virtual void TickInInventoryActive(float DeltaTime, UWorld* World, const FHitResult& HitResult);
 
-	virtual void actionInInventoryActive(UWorld* w, FHitResult& hit);
+	virtual void ActionInInventoryActive(UWorld* World, const FHitResult& HitResult);
 
-	virtual void actionInInventoryActive2(UWorld* w, FHitResult& hit);
+	virtual void ActionInInventoryActive2(UWorld* World, const FHitResult& HitResultt);
 
 	virtual bool CanTake(AActor* actor);
 

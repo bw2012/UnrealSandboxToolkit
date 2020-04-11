@@ -11,6 +11,9 @@
 #include "Blueprint/UserWidget.h"
 #include "VitalSysWidget.generated.h"
 
+
+class UVitalSystemComponent;
+
 /**
  * 
  */
@@ -26,4 +29,14 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SandboxVitalSys")
 	float GetMaxHealth();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Widget")
+	float GetHealthInPercent();
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox Widget")
+	float GetStaminaInPercent();
+
+private:
+
+	UVitalSystemComponent* GetVitalSystemComponent();
 };

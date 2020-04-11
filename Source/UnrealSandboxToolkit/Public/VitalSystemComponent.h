@@ -34,7 +34,33 @@ public:
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
+
+
+
+
+	float GetHealth();
+
+	float GetMaxHealth();
+
+	void ChangeHealth(float Val);
+
+	void Damage(float DamageVal);
+
+	float GetStamina();
+
+	float GetMaxStamina();
+
+	void ChangeStamina(float Val);
+
+private:
+
+	FTimerHandle Timer;
+
+	void PerformTimer();
+
 };

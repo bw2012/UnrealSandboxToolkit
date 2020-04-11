@@ -36,6 +36,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	bool bIsAdmin;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
@@ -47,28 +50,28 @@ public:
 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
-	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	UFUNCTION(BlueprintCallable, Category = "UnrealSandbox Character")
 	void InitTopDownView();
 
-	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	UFUNCTION(BlueprintCallable, Category = "UnrealSandbox Character")
 	void InitThirdPersonView();
 
-	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	UFUNCTION(BlueprintCallable, Category = "UnrealSandbox Character")
 	void InitFirstPersonView();
 
 	PlayerView GetSandboxPlayerView();
 
 	void SetSandboxPlayerView(PlayerView SandboxView);
 
-	UPROPERTY(EditAnywhere, Category = "UnrealSandbox")
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
 	PlayerView InitialView = PlayerView::TOP_DOWN;
 
 	bool IsDead() { return bIsDead; }
 
-	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	UFUNCTION(BlueprintCallable, Category = "UnrealSandbox Character")
 	void Kill();
 
-	UFUNCTION(BlueprintCallable, Category = "Sandbox Character")
+	UFUNCTION(BlueprintCallable, Category = "UnrealSandbox Character")
 	void LiveUp();
 
 	void Jump() override;
@@ -112,7 +115,7 @@ private:
 	void OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult);
 
 	UPROPERTY()
-	UVitalSystemComponent* VitalSysPtr;
+	UVitalSystemComponent* VitalSystemComponent;
 
 protected:
 	void ZoomIn();

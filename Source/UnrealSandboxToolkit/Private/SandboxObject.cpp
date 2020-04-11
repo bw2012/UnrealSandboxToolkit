@@ -24,14 +24,18 @@ void ASandboxObject::Tick( float DeltaTime ) {
 	Super::Tick( DeltaTime );
 }
 
-static const FString sandbox_object_name = FString(TEXT("test object"));
+static const FString DefaultSandboxObjectName = FString(TEXT("Sandbox object"));
 
 FString ASandboxObject::GetSandboxName() {
-	return sandbox_object_name;
+	return DefaultSandboxObjectName;
 }
 
-int ASandboxObject::GetSandboxCid() {
+int ASandboxObject::GetSandboxClassId() {
 	return 0; // empty object
+}
+
+uint64 ASandboxObject::GetSandboxTypeId() {
+	return 0; // default type
 }
 
 int ASandboxObject::GetMaxStackSize() {
@@ -62,15 +66,15 @@ UTexture2D* ASandboxObject::GetSandboxIconTexture() {
 	return NULL; 
 }
 
-void ASandboxObject::tickInInventoryActive(float DeltaTime, UWorld* w, FHitResult& hit) {
+void ASandboxObject::TickInInventoryActive(float DeltaTime, UWorld* World, const FHitResult& HitResult) {
 
 }
 
-void ASandboxObject::actionInInventoryActive(UWorld* w, FHitResult& hit) {
+void ASandboxObject::ActionInInventoryActive(UWorld* World, const FHitResult& HitResult) {
 
 }
 
-void ASandboxObject::actionInInventoryActive2(UWorld* w, FHitResult& hit) {
+void ASandboxObject::ActionInInventoryActive2(UWorld* World, const FHitResult& HitResult) {
 
 }
 

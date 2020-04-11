@@ -7,7 +7,7 @@
 
 
 ASandboxCharacter::ASandboxCharacter() {
-
+	bIsAdmin = false;
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
 	bUseControllerRotationPitch = false;
@@ -70,7 +70,7 @@ void ASandboxCharacter::BeginPlay() {
 	GetComponents<UVitalSystemComponent>(Components);
 
 	for (UVitalSystemComponent* VitalSysCmp : Components) {
-		VitalSysPtr = VitalSysCmp;
+		VitalSystemComponent = VitalSysCmp;
 		break;
 	}
 }
@@ -120,6 +120,7 @@ void ASandboxCharacter::BoostOff() {
 }
 
 void ASandboxCharacter::Jump() {
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
 	if (IsDead()) return;
 
 	Super::Jump();
@@ -192,7 +193,6 @@ void ASandboxCharacter::InitTopDownView() {
 }
 
 void ASandboxCharacter::InitThirdPersonView() {
-
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
@@ -397,11 +397,12 @@ void ASandboxCharacter::LiveUp() {
 
 void ASandboxCharacter::OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult) {
 	float HitVelocity = GetCapsuleComponent()->GetComponentVelocity().Size();
-
-	//UE_LOG(LogTemp, Warning, TEXT("hit velocity -> %f"), HitVelocity);
-	if (VitalSysPtr != nullptr) {
-		if (HitVelocity > 680) {
-			Kill();
+	//UE_LOG(LogTemp, Warning, TEXT("HitVelocity -> %f"), HitVelocity);
+	if (VitalSystemComponent != nullptr) {
+		const static float HitVelocityThreshold = 1300;
+		if (HitVelocity > HitVelocityThreshold) {
+			const float Damage = (HitVelocity - HitVelocityThreshold) * 0.2f;
+			VitalSystemComponent->Damage(Damage);
 		}
 	}
 }

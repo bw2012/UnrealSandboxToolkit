@@ -102,6 +102,8 @@ protected:
 
 	virtual UContainerComponent* GetInventory();
 
+	virtual void OnTracePlayerActionPoint(const FHitResult& Res);
+
 public:
 
 	void ShowMouseCursor(bool bShowCursor) { this->bShowMouseCursor = bShowCursor;  };
