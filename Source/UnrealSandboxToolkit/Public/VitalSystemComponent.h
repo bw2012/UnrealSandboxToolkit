@@ -59,6 +59,8 @@ public:
 
 private:
 
+	bool IsOwnerAdmin();
+
 	FTimerHandle Timer;
 
 	void PerformTimer();

@@ -17,6 +17,15 @@ UVitalSystemComponent::UVitalSystemComponent() {
 	MaxStamina = 60;
 }
 
+bool UVitalSystemComponent::IsOwnerAdmin() {
+	ASandboxCharacter* SandboxCharacter = Cast<ASandboxCharacter>(GetOwner());
+	if (SandboxCharacter) {
+		return SandboxCharacter->bIsAdmin;
+	}
+
+	return true;
+}
+
 float UVitalSystemComponent::GetHealth() {
 	return Health;
 }
@@ -33,6 +42,7 @@ void UVitalSystemComponent::ChangeHealth(float Val){
 }
 
 void UVitalSystemComponent::Damage(float DamageVal) {
+	if (IsOwnerAdmin()) { return; }
 	ChangeHealth(-DamageVal);
 	ChangeStamina(-DamageVal);
 	if (Health == 0) {
@@ -52,6 +62,7 @@ float UVitalSystemComponent::GetMaxStamina() {
 }
 
 void UVitalSystemComponent::ChangeStamina(float Val) {
+	if (IsOwnerAdmin() && Val < 0) { return; }
 	Stamina += Val;
 	if (Stamina <= 0) { Stamina = 0; }
 	if (Stamina > MaxStamina) { Stamina = MaxStamina; }
