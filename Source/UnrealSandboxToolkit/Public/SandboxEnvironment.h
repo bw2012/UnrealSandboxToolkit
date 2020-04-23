@@ -36,6 +36,9 @@ public:
 	ASkyLight* SkyLight;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	AStaticMeshActor* CaveSphere;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float TimeScale;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
@@ -49,6 +52,15 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float RecaptureSkyTreshold;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
+	float MinCaveSkyLightIntensity;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
+	float ThresholdStartLightFalloff;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
+	float ThresholdEndLightFalloff;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	bool bEnableDayNightCycle;
@@ -82,7 +94,14 @@ public:
 
 	void SandboxSetTimeOffset(float time);
 
+	void UpdatePlayerPosition(FVector Pos, float GroundLevel = 0);
+
+	void SetCaveMode(bool bCaveModeEnabled);
+
 private:
+
+	bool bCaveMode = false;
+
 	float LastTime;
 
 	float LastSkyIntensity;

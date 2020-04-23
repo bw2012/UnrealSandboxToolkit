@@ -19,6 +19,9 @@ ASandboxEnvironment::ASandboxEnvironment() {
 	Lat = 53.91;
 	TimeZone = +3;
 	LastSunHeight = -1;
+	MinCaveSkyLightIntensity = 0.5;
+	ThresholdStartLightFalloff = -500;
+	ThresholdEndLightFalloff = -2000;
 }
 
 void ASandboxEnvironment::BeginPlay() {
@@ -27,6 +30,10 @@ void ASandboxEnvironment::BeginPlay() {
 	if (DirectionalLightSource != NULL && SkySphere != NULL){
 		DirectionalLightSource->SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	}
+
+	if (CaveSphere) {
+		CaveSphere->GetStaticMeshComponent()->SetVisibility(bCaveMode);
+	}
 }
 
 void ASandboxEnvironment::Tick( float DeltaTime ) {
@@ -34,6 +41,15 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 
 	if(bEnableDayNightCycle) {
 		PerformDayNightCycle();
+	}
+}
+
+void SetSkyLightIntensity(ASkyLight* SkyLight, float Intensity) {
+	if (SkyLight) {
+		USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
+		if (SkyLightComponent != NULL) {
+			SkyLightComponent->Intensity = Intensity;
+		}
 	}
 }
 
@@ -167,5 +183,36 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool
 
 void ASandboxEnvironment::SandboxSetTimeOffset(float Offset) {
 	TimeOffset = Offset;
+}
+
+void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
+	if (bCaveMode) {
+		CaveSphere->SetActorLocation(Pos);
+	}
+
+	if (Pos.Z < ThresholdEndLightFalloff) {
+		SetSkyLightIntensity(SkyLight, MinCaveSkyLightIntensity);
+	} else if (Pos.Z < ThresholdStartLightFalloff) {
+		float H = ThresholdStartLightFalloff - Pos.Z;
+		float IntensityStep = (1 - MinCaveSkyLightIntensity) / (ThresholdStartLightFalloff - ThresholdEndLightFalloff);
+		float Intensity = 1 - H * IntensityStep;
+		UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
+		SetSkyLightIntensity(SkyLight, Intensity);
+	} else {
+		SetSkyLightIntensity(SkyLight, 1.f);
+	}
+}
+
+
+void ASandboxEnvironment::SetCaveMode(bool bCaveModeEnabled) {
+	if (bCaveMode == bCaveModeEnabled) {
+		return;
+	}
+
+	if (CaveSphere) {
+		CaveSphere->GetStaticMeshComponent()->SetVisibility(bCaveModeEnabled);
+	}
+
+	bCaveMode = bCaveModeEnabled;
 }
 
