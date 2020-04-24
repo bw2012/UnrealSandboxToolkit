@@ -39,6 +39,9 @@ public:
 	AStaticMeshActor* CaveSphere;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	AAmbientSound* AmbientSound;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float TimeScale;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")

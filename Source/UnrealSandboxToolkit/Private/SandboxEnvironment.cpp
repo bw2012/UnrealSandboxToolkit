@@ -201,6 +201,20 @@ void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 	} else {
 		SetSkyLightIntensity(SkyLight, 1.f);
 	}
+
+	if (AmbientSound) {
+		float Value = 0;
+		if (Pos.Z < -1000) {
+			Value = Pos.Z / -3000;
+			if (Value > 1) {
+				Value = 1;
+			}
+		}
+
+		FAudioComponentParam Param(TEXT("Z"));
+		Param.FloatParam = Value;
+		AmbientSound->GetAudioComponent()->SetSoundParameter(Param);
+	}
 }
 
 
