@@ -18,7 +18,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Sandbox", meta = (AllowPrivateAccess = "true"))
 	class UContainerComponent* Container;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	//UPROPERTY(EditAnywhere, Category = "Sandbox")
+	UPROPERTY(Category = StaticMeshActor, VisibleAnywhere, BlueprintReadOnly, meta = (ExposeFunctionCategories = "Mesh,Rendering,Physics,Components|StaticMesh", AllowPrivateAccess = "true"))
 	UStaticMeshComponent* SandboxRootMesh;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
