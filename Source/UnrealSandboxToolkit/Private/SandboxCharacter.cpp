@@ -112,30 +112,62 @@ void ASandboxCharacter::SetupPlayerInputComponent(class UInputComponent* InputCo
 
 
 void ASandboxCharacter::BoostOn() {
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
+
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void ASandboxCharacter::BoostOff() {
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
+
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void ASandboxCharacter::Jump() {
-	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
-	if (IsDead()) return;
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
+
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) {
+		return;
+	}
+
+	if (IsDead()) {
+		return;
+	}
 
 	Super::Jump();
 }
 
 void ASandboxCharacter::StopJumping() {
-	if (IsDead()) return;
+	if (IsDead()) {
+		return;
+	}
 
 	Super::StopJumping();
 }
 
 
 void ASandboxCharacter::ZoomIn() {
-	if (GetCameraBoom() == NULL) return;
-	if (CurrentPlayerView == PlayerView::FIRST_PERSON) return;
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
+
+	if (GetCameraBoom() == NULL) {
+		return;
+	}
+
+	if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
+		return;
+	}
 
 	if (GetCameraBoom()->TargetArmLength > MinZoom) {
 		GetCameraBoom()->TargetArmLength -= ZoomStep;
@@ -147,6 +179,11 @@ void ASandboxCharacter::ZoomIn() {
 }
 
 void ASandboxCharacter::ZoomOut() {
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
+
 	if (GetCameraBoom() == NULL) return;
 
 	if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
@@ -213,7 +250,7 @@ void ASandboxCharacter::InitThirdPersonView() {
 	CurrentPlayerView = PlayerView::THIRD_PERSON;
 
 	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
-	if (Controller != NULL) {
+	if (Controller) {
 		Controller->ShowMouseCursor(false);
 
 		if (CrosshairWidget) {
@@ -237,7 +274,7 @@ void ASandboxCharacter::InitFirstPersonView() {
 	CurrentPlayerView = PlayerView::FIRST_PERSON;
 
 	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
-	if (Controller != NULL) {
+	if (Controller) {
 		Controller->ShowMouseCursor(false);
 
 		if (CrosshairWidget) {
@@ -247,51 +284,59 @@ void ASandboxCharacter::InitFirstPersonView() {
 }
 
 void ASandboxCharacter::AddControllerYawInput(float Val) {
-	AController* controller = (AController*)GetController();
-	if (controller == NULL) { return; }
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) { 
+		return;
+	}
 
-	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
-	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
+	if (Controller->IsGameInputBlocked()) {
+		return;
+	}
 
-	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) {
+		return;
+	}
 
 	Super::AddControllerYawInput(Val);
 
 }
 
 void ASandboxCharacter::AddControllerPitchInput(float Val) {
-	AController* controller = (AController*)GetController();
-	if (controller == NULL) { return; }
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
 
-	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
-	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
-
-	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN){
+		return;
+	}
 
 	Super::AddControllerPitchInput(Val);
 }
 
 void ASandboxCharacter::TurnAtRate(float Rate) {
-	AController* controller = (AController*)GetController();
-	if (controller == NULL) { return; }
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
 
-	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
-	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
-
-	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) {
+		return;
+	}
 
 	// calculate delta for this frame from the rate information
 	//AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
 
 void ASandboxCharacter::LookUpAtRate(float Rate) {
-	AController* controller = (AController*)GetController();
-	if (controller == NULL) { return; }
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
 
-	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
-	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
-
-	if (CurrentPlayerView == PlayerView::TOP_DOWN) return;
+	if (CurrentPlayerView == PlayerView::TOP_DOWN) {
+		return;
+	}
 
 	// calculate delta for this frame from the rate information
 	//AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
@@ -299,13 +344,14 @@ void ASandboxCharacter::LookUpAtRate(float Rate) {
 
 
 void ASandboxCharacter::MoveForward(float Value) {
-	AController* controller = (AController*)GetController();
-	if (controller == NULL) { return; }
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
 
-	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
-	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
-
-	if (IsDead()) { return; };
+	if (IsDead()) { 
+		return; 
+	};
 
 	if (CurrentPlayerView == PlayerView::THIRD_PERSON) {
 		if (Value != 0.0f)	{
@@ -328,13 +374,14 @@ void ASandboxCharacter::MoveForward(float Value) {
 }
 
 void ASandboxCharacter::MoveRight(float Value) {
-	AController* controller = (AController*)GetController();
-	if (controller == NULL) { return; }
+	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
+	if (!Controller || Controller->IsGameInputBlocked()) {
+		return;
+	}
 
-	ASandboxPlayerController* SandboxController = Cast<ASandboxPlayerController>(GetController());
-	if (SandboxController != NULL && SandboxController->IsGameInputBlocked()) return;
-
-	if (IsDead()) { return; };
+	if (IsDead()) { 
+		return;
+	};
 
 	if (CurrentPlayerView == PlayerView::THIRD_PERSON) {
 		if (Value != 0.0f) {

@@ -29,9 +29,6 @@ public:
 	void UnblockGameInput();
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
-	bool IsGameInputBlocked() { return bIsGameInputBlocked; }
-
-	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	void SetCurrentInventorySlot(int32 Slot) { CurrentInventorySlot = Slot; }
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
@@ -60,6 +57,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	void SelectActionObject(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	bool IsGameInputBlocked();
 
 	void OpenCrosshairWidget();
 
@@ -109,6 +109,15 @@ public:
 	void ShowMouseCursor(bool bShowCursor) { this->bShowMouseCursor = bShowCursor;  };
 
 private:
+
+	void OnMainActionPressedInternal();
+	
+	void OnMainActionReleasedInternal();
+
+	void OnAltActionPressedInternal();
+
+	void OnAltActionReleasedInternal();
+
 
 	FHitResult CurrentPos;
 

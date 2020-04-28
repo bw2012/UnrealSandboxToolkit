@@ -30,7 +30,7 @@ FLinearColor USandboxObjectContainerCellWidget::SlotBorderColor(int32 SlotId) {
 	}
 	*/
 
-	return FLinearColor(0, 0, 0, 0);
+	return FLinearColor(0, 0, 0, 0.5);
 }
 
 
@@ -102,7 +102,7 @@ UTexture2D* USandboxObjectContainerCellWidget::GetSlotTexture(int32 SlotId) {
 }
 
 void USandboxObjectContainerCellWidget::SelectSlot(int32 SlotId) {
-
+	UE_LOG(LogTemp, Warning, TEXT("SelectSlot: %d"), SlotId);
 }
 
 bool USandboxObjectContainerCellWidget::SlotDrop(int32 SlotDropId, int32 SlotTargetId, AActor* SourceActor, UContainerComponent* SourceContainer) {
