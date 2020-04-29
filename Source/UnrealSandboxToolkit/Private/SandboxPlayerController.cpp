@@ -198,9 +198,13 @@ void ASandboxPlayerController::ToggleView() {
 			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Character->GetActorLocation()); //abort move
 			Character->InitThirdPersonView();
 			bShowMouseCursor = false;
+			CloseCrosshairWidget();
 		} else if (Character->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
 			Character->InitTopDownView();
 			bShowMouseCursor = true;
+			CloseCrosshairWidget();
+		} else if (Character->GetSandboxPlayerView() == PlayerView::FIRST_PERSON) {
+			OpenCrosshairWidget();
 		}
 	} else {
 		bShowMouseCursor = false;
