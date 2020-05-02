@@ -20,6 +20,9 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Toolkit")
+	FString MapName;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Toolkit")
 	USandboxObjectMap* ObjectMap;
 
 private:

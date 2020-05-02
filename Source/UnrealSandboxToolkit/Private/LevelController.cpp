@@ -5,7 +5,7 @@
 #include "SandboxObject.h"
 
 ASandboxLevelController::ASandboxLevelController() {
-
+	MapName = TEXT("World 0");
 }
 
 void ASandboxLevelController::BeginPlay() {
@@ -28,7 +28,7 @@ void ASandboxLevelController::SaveLevelJson() {
 	FString JsonStr;
 	FString FileName = TEXT("level.json");
 	FString SavePath = FPaths::GameSavedDir();
-	FString FullPath = SavePath + TEXT("/Map/") + FileName;
+	FString FullPath = SavePath + TEXT("/Map/") + MapName + TEXT("/") + FileName;
 
 	//UE_LOG(LogTemp, Warning, TEXT("level json path -> %s"), *FullPath);
 
@@ -96,7 +96,7 @@ void ASandboxLevelController::LoadLevelJson() {
 
 	FString FileName = TEXT("level.json");
 	FString SavePath = FPaths::GameSavedDir();
-	FString FullPath = SavePath + TEXT("/Map/") + FileName;
+	FString FullPath = SavePath + TEXT("/Map/") + MapName + TEXT("/") + FileName;
 
 	FString JsonRaw;
 	if (!FFileHelper::LoadFileToString(JsonRaw, *FullPath)) {
