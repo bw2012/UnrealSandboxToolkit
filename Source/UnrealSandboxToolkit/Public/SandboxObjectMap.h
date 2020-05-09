@@ -14,7 +14,7 @@ class UNREALSANDBOXTOOLKIT_API USandboxObjectMap : public UDataAsset {
 public:	
 	
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Toolkit")
-	TMap<int32, UBlueprint*> ObjectMap;
+	TMap<int32, TSubclassOf<ASandboxObject>> ObjectMap;
 
 
 };
