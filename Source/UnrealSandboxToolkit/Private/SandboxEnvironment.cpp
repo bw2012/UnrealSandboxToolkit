@@ -196,7 +196,7 @@ void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 		float H = ThresholdStartLightFalloff - Pos.Z;
 		float IntensityStep = (1 - MinCaveSkyLightIntensity) / (ThresholdStartLightFalloff - ThresholdEndLightFalloff);
 		float Intensity = 1 - H * IntensityStep;
-		UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
+		//UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
 		SetSkyLightIntensity(SkyLight, Intensity);
 	} else {
 		SetSkyLightIntensity(SkyLight, 1.f);

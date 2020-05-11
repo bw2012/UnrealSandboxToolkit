@@ -263,8 +263,9 @@ FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
 
 		FCollisionQueryParams TraceParams(FName(TEXT("")), true, this);
 		//TraceParams.bTraceAsyncScene = true;
-		TraceParams.bReturnPhysicalMaterial = false;
-		TraceParams.bTraceComplex = false;
+		//TraceParams.bReturnPhysicalMaterial = false;
+		TraceParams.bTraceComplex = true;
+		TraceParams.bReturnFaceIndex = true;
 		TraceParams.AddIgnoredActor(Character);
 
 		FHitResult Hit(ForceInit);

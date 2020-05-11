@@ -8,6 +8,7 @@ ASandboxObject::ASandboxObject() {
 	SandboxRootMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SandboxRootMesh"));
 	MaxStackSize = 100;
 	bStackable = true;
+	RootComponent = SandboxRootMesh;
 }
 
 void ASandboxObject::BeginPlay() {
