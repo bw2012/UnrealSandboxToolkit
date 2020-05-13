@@ -26,6 +26,12 @@ public:
 	UTexture2D* IconTexture;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox Inventory")
+	uint32 SandboxClassId;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Inventory")
+	uint32 SandboxTypeId;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Inventory")
 	bool bStackable;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox Inventory")

@@ -32,11 +32,11 @@ FString ASandboxObject::GetSandboxName() {
 }
 
 int ASandboxObject::GetSandboxClassId() {
-	return 0; // empty object
+	return SandboxClassId; 
 }
 
 uint64 ASandboxObject::GetSandboxTypeId() {
-	return 0; // default type
+	return SandboxTypeId; 
 }
 
 int ASandboxObject::GetMaxStackSize() {
