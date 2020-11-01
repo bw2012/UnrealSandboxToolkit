@@ -27,7 +27,7 @@ void ASandboxLevelController::SaveLevelJson() {
 
 	FString JsonStr;
 	FString FileName = TEXT("level.json");
-	FString SavePath = FPaths::GameSavedDir();
+	FString SavePath = FPaths::ProjectSavedDir();
 	FString FullPath = SavePath + TEXT("/Map/") + MapName + TEXT("/") + FileName;
 
 	//UE_LOG(LogTemp, Warning, TEXT("level json path -> %s"), *FullPath);
@@ -103,7 +103,7 @@ void ASandboxLevelController::LoadLevelJson() {
 	UE_LOG(LogTemp, Warning, TEXT("----------- load level json -----------"));
 
 	FString FileName = TEXT("level.json");
-	FString SavePath = FPaths::GameSavedDir();
+	FString SavePath = FPaths::ProjectSavedDir();
 	FString FullPath = SavePath + TEXT("/Map/") + MapName + TEXT("/") + FileName;
 
 	FString JsonRaw;

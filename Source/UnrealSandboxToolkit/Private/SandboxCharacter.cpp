@@ -20,12 +20,12 @@ ASandboxCharacter::ASandboxCharacter() {
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	FollowCamera->AttachTo(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	FollowCamera->RelativeLocation = FVector(0, 0, 0); // Position the camera
+	FollowCamera->SetRelativeLocation(FVector(0, 0, 0)); // Position the camera
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(GetMesh(), TEXT("head"));
-	FirstPersonCamera->RelativeLocation = FVector(10.0f, 32.0f, 0.f); // Position the camera
-	FirstPersonCamera->RelativeRotation = FRotator(0, 90, -90);
+	FirstPersonCamera->SetRelativeLocation(FVector(10.0f, 32.0f, 0.f)); // Position the camera
+	FirstPersonCamera->SetRelativeRotation(FRotator(0, 90, -90));
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ASandboxCharacter::OnHit);
@@ -206,14 +206,14 @@ void ASandboxCharacter::InitTopDownView() {
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
 
-	CameraBoom->bAbsoluteRotation = true; // Don't want arm to rotate when character does
+	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
 
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->TargetArmLength = 800.f;
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 	CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
 	CameraBoom->ProbeSize = 0;
-	CameraBoom->RelativeLocation = FVector(0, 0, 0);
+	CameraBoom->SetRelativeLocation(FVector(0, 0, 0));
 
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
@@ -240,7 +240,7 @@ void ASandboxCharacter::InitThirdPersonView() {
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	CameraBoom->bDoCollisionTest = true;
 	CameraBoom->ProbeSize = 12;
-	CameraBoom->RelativeLocation = FVector(0, 0, 64);
+	CameraBoom->SetRelativeLocation(FVector(0, 0, 64));
 
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
