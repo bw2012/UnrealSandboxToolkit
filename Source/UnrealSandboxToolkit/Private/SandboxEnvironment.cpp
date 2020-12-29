@@ -38,6 +38,7 @@ void ASandboxEnvironment::BeginPlay() {
 		UExponentialHeightFogComponent* FogCmoponent = GlobalFog->GetComponent();
 		FogMaxOpacity = FogCmoponent->FogMaxOpacity;
 		FogMaxDensity = FogCmoponent->FogDensity;
+		FogColor = FogCmoponent->FogInscatteringColor;
 	}
 
 	MaxSkyLigthIntensity = MaxDaySkyLigthIntensity;
@@ -60,6 +61,24 @@ void SetSkyLightIntensity(ASkyLight* SkyLight, float Intensity) {
 		}
 	}
 }
+
+void SetFogParams(AExponentialHeightFog* GlobalFog, float Density, float Opacity) {
+	if (GlobalFog) {
+		UExponentialHeightFogComponent* FogCmoponent = GlobalFog->GetComponent();
+		FogCmoponent->SetFogDensity(Density);
+		FogCmoponent->SetFogMaxOpacity(Opacity);
+	}
+}
+
+void SetFogParams(AExponentialHeightFog* GlobalFog, float Density, float Opacity, FLinearColor Color) {
+	if (GlobalFog) {
+		UExponentialHeightFogComponent* FogCmoponent = GlobalFog->GetComponent();
+		FogCmoponent->SetFogDensity(Density);
+		FogCmoponent->SetFogMaxOpacity(Opacity);
+		FogCmoponent->SetFogInscatteringColor(Color);
+	}
+}
+
 
 void ASandboxEnvironment::PerformDayNightCycle() {
 	UWorld* World = GetWorld();
@@ -95,6 +114,15 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 	if (DirectionalLightSource) {
 		DirectionalLightSource->SetActorRotation(FRotator(-(90 - SunPosition.dZenithAngle), SunPosition.dAzimuth, 0.0f));
 
+		if (bCaveMode) {
+			SetSkyLightIntensity(SkyLight, MinCaveSkyLightIntensity);
+			SetFogParams(GlobalFog, CaveFogDensity, CaveFogOpacity, CaveFogInscatteringColor);
+			DirectionalLightSource->SetEnabled(false);
+			return;
+		} else {
+			DirectionalLightSource->SetEnabled(true);
+		}
+
 		if (SkyLight) {
 			float H = 1 - SunPosition.dZenithAngle / 180;
 			bIsNight = H < 0.5;
@@ -105,29 +133,30 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 			}
 
 			//UE_LOG(LogTemp, Log, TEXT("dZenithAngle -> %f %f"), SunPosition.dZenithAngle, Temp);
-
 			float Intensity = MinNightSkyLigthIntensity + Temp * MaxSkyLigthIntensity;
 			SetSkyLightIntensity(SkyLight, Intensity);
 
 			if (GlobalFog) {
 				UExponentialHeightFogComponent* FogCmoponent = GlobalFog->GetComponent();
 				float FogOpacity = FogMaxOpacity * Temp;
+				FogCmoponent->SetFogInscatteringColor(FogColor);
 
 				if (GlobalFogDensityCurve) {
 					float K = GlobalFogDensityCurve->GetFloatValue(H - 0.5);
 					FogCmoponent->SetFogDensity(FogMaxDensity * K);
-				} else {
+				}
+				else {
 					FogCmoponent->SetFogDensity(FogMaxDensity * Temp);
 				}
 
 				if (GlobalFogOpacityCurve) {
 					float K = GlobalFogOpacityCurve->GetFloatValue(H - 0.5);
 					FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * K);
-				} else {
+				}
+				else {
 					FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * Temp);
 				}
 			}
-
 		}
 	}
 }
@@ -210,17 +239,15 @@ void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 	}
 
 	if (Pos.Z < ThresholdEndLightFalloff) {
-		//SetSkyLightIntensity(SkyLight, MinCaveSkyLightIntensity);
-		//MaxSkyLigthIntensity = MinCaveSkyLightIntensity;
+		MaxSkyLigthIntensity = MinCaveSkyLightIntensity;
 	} else if (Pos.Z < ThresholdStartLightFalloff) {
 		float H = ThresholdStartLightFalloff - Pos.Z;
 		float IntensityStep = (1 - MinCaveSkyLightIntensity) / (ThresholdStartLightFalloff - ThresholdEndLightFalloff);
 		float Intensity = 1 - H * IntensityStep;
-		//UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
-		//SetSkyLightIntensity(SkyLight, Intensity);
-		//MaxSkyLigthIntensity = Intensity;
+		UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
+		MaxSkyLigthIntensity = Intensity;
 	} else {
-		//MaxSkyLigthIntensity = MaxDaySkyLigthIntensity;
+		MaxSkyLigthIntensity = MaxDaySkyLigthIntensity;
 	}
 
 	//PerformDayNightCycle();

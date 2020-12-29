@@ -71,6 +71,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
 	float ThresholdEndLightFalloff;
 
+	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
+	float CaveFogDensity;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
+	float CaveFogOpacity;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
+	FLinearColor CaveFogInscatteringColor;
+
 	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	bool bEnableDayNightCycle;
 
@@ -132,5 +141,7 @@ private:
 	void PerformDayNightCycle();
 
 	float LastSunHeight;
+
+	FLinearColor FogColor;
 	
 };
