@@ -26,7 +26,10 @@ FString UWorldTimeWidget::GetLatLngString() {
 
 FString UWorldTimeWidget::GetDateString() {
 	if (SandboxEnvironment->IsValidLowLevel()) {
-		return FString::Printf(TEXT("%d.%d.%d"), SandboxEnvironment->InitialDay, SandboxEnvironment->InitialMonth, SandboxEnvironment->InitialYear);
+		AGameStateBase* GameState = GetWorld()->GetGameState();
+		SandboxGameTime GameTime = SandboxEnvironment->ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds(), true);
+		//return FString::Printf(TEXT("%d.%d.%d"), SandboxEnvironment->InitialDay, SandboxEnvironment->InitialMonth, SandboxEnvironment->InitialYear);
+		return FString::Printf(TEXT("%d.%02d.%d"), GameTime.days, GameTime.month, GameTime.year);
 	}
 
 	return TEXT("");

@@ -25,12 +25,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Toolkit")
 	USandboxObjectMap* ObjectMap;
 
+	TSubclassOf<ASandboxObject> GetSandboxObjectByClassId(int32 ClassId);
+
 protected:
 
 	TMap<FString, TSubclassOf<ASandboxObject>> ObjectMapByClassName;
 
 	virtual void SaveLevelJson();
 
+	virtual void SaveLevelJsonExt(TSharedRef <TJsonWriter<TCHAR>> JsonWriter);
+
 	virtual void LoadLevelJson();
+
+	virtual void LoadLevelJsonExt(TSharedPtr<FJsonObject> JsonParsed);
 
 };

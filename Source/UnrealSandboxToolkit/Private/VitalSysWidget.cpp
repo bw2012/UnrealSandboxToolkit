@@ -16,9 +16,14 @@ float USandboxVitalSysWidget::GetMaxHealth() {
 
 UVitalSystemComponent* USandboxVitalSysWidget::GetVitalSystemComponent() {
 	ASandboxCharacter* SandboxCharacter = Cast<ASandboxCharacter>(GetOwningPlayer()->GetPawn());
-	TArray<UVitalSystemComponent*> Components;
-	SandboxCharacter->GetComponents<UVitalSystemComponent>(Components);
-	for (UVitalSystemComponent* VitalSystemComponent : Components) { return VitalSystemComponent; }
+	if (SandboxCharacter) {
+		TArray<UVitalSystemComponent*> Components;
+		SandboxCharacter->GetComponents<UVitalSystemComponent>(Components);
+		for (UVitalSystemComponent* VitalSystemComponent : Components) {
+			return VitalSystemComponent;
+		}
+	}
+
 	return nullptr;
 }
 

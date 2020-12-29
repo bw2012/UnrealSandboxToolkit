@@ -9,7 +9,7 @@
 FLinearColor USandboxObjectContainerCellWidget::SlotBorderColor(int32 SlotId) {
 	if (ContainerId == 0) {
 		ASandboxPlayerController* PlayerController = Cast<ASandboxPlayerController>(GetOwningPlayer());
-		if (PlayerController != NULL) {
+		if (PlayerController) {
 			if (PlayerController->CurrentInventorySlot == SlotId) {
 				return FLinearColor(0.1, 0.4, 1, 1);
 			}
@@ -53,20 +53,21 @@ FString USandboxObjectContainerCellWidget::SlotGetAmountText(int32 SlotId) {
 UContainerComponent* USandboxObjectContainerCellWidget::GetContainer() {
 	if (ContainerId == 0) {
 		APawn* Pawn = GetOwningPlayer()->GetPawn();
+		if (Pawn) {
+			TArray<UContainerComponent*> Components;
+			Pawn->GetComponents<UContainerComponent>(Components);
 
-		TArray<UContainerComponent*> Components;
-		Pawn->GetComponents<UContainerComponent>(Components);
-
-		for (UContainerComponent* Container : Components) {
-			if (Container->GetName().Equals(TEXT("Inventory"))) {
-				return Container;
+			for (UContainerComponent* Container : Components) {
+				if (Container->GetName().Equals(TEXT("Inventory"))) {
+					return Container;
+				}
 			}
 		}
 	}
 
 	if (ContainerId == 100) { // opened object
 		ASandboxPlayerController* SandboxPC = Cast<ASandboxPlayerController>(GetOwningPlayer());
-		if (SandboxPC != nullptr) {
+		if (SandboxPC) {
 			return SandboxPC->GetOpenedContainer();
 		}
 	}

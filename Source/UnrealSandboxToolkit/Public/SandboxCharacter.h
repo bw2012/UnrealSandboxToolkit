@@ -66,6 +66,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
 	PlayerView InitialView = PlayerView::TOP_DOWN;
 
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	bool bEnableAutoSwitchView = true;
+
 	bool IsDead() { return bIsDead; }
 
 	UFUNCTION(BlueprintCallable, Category = "UnrealSandbox Character")
@@ -80,6 +83,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
 	float MaxZoom;
+
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
+	float MaxZoomTopDown;
 
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Character")
 	float MinZoom;
@@ -149,5 +155,9 @@ protected:
 	virtual void AddControllerYawInput(float Val) override;
 
 	virtual void AddControllerPitchInput(float Val) override;
+
+	virtual FVector GetThirdPersonViewCameraPos();
+
+	virtual FRotator GetTopDownViewCameraRot();
 	
 };

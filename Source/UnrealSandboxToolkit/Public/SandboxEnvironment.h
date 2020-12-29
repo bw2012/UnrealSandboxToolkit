@@ -11,6 +11,9 @@ struct SandboxGameTime {
 	long hours;
 	long minutes;
 	long seconds;
+
+	int month;
+	int year;
 };
 
 
@@ -30,10 +33,16 @@ public:
 	ADirectionalLight* DirectionalLightSource;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	AActor* SkySphere;
+	ASkyLight* SkyLight;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	ASkyLight* SkyLight;
+	AExponentialHeightFog* GlobalFog;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	UCurveFloat* GlobalFogDensityCurve;
+
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	UCurveFloat* GlobalFogOpacityCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	AStaticMeshActor* CaveSphere;
@@ -42,16 +51,13 @@ public:
 	AAmbientSound* AmbientSound;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	float TimeScale;
-
-	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float TimeSpeed;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	float MaxSkyLigthIntensity;
+	float MaxDaySkyLigthIntensity;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
-	float NightSkyLigthIntensity;
+	float MinNightSkyLigthIntensity;
 
 	UPROPERTY(EditAnywhere, Category = "Sandbox")
 	float RecaptureSkyTreshold;
@@ -68,25 +74,25 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	bool bEnableDayNightCycle;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	int InitialYear = 2016;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	int InitialMonth = 6;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	int InitialDay = 10;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
-	int InitialHour = 12;
+	//UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
+	//int InitialHour = 12;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	int TimeZone;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	float Lat;
 
-	UPROPERTY(EditAnywhere, Category = "Sandbox Time")
+	UPROPERTY(EditAnywhere, Category = "Sandbox DayNight cycle")
 	float Lng;
 
 	float ClcGameTime(float RealServerTime);
@@ -95,21 +101,33 @@ public:
 
 	SandboxGameTime ClcGameTimeOfDay(float RealServerTime, bool bAccordingTimeZone);
 
-	void SandboxSetTimeOffset(float time);
+	void SetTimeOffset(float time);
+
+	double GetNewTimeOffset();
 
 	void UpdatePlayerPosition(FVector Pos, float GroundLevel = 0);
 
 	void SetCaveMode(bool bCaveModeEnabled);
 
+	bool IsNight() const;
+
 private:
+
+	bool bIsNight;
 
 	bool bCaveMode = false;
 
 	float LastTime;
 
+	float MaxSkyLigthIntensity;
+
+	float FogMaxOpacity;
+
+	float FogMaxDensity;
+
 	float LastSkyIntensity;
 
-	float TimeOffset = 0;
+	double RealTimeOffset = 0;
 
 	void PerformDayNightCycle();
 

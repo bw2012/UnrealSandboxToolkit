@@ -61,6 +61,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Sandbox")
 	bool IsGameInputBlocked();
 
+	UFUNCTION(BlueprintCallable, Category = "Sandbox")
+	void TraceAndSelectActionObject();
+
+
 	void OpenCrosshairWidget();
 
 	void CloseCrosshairWidget();
@@ -103,6 +107,12 @@ protected:
 	virtual UContainerComponent* GetInventory();
 
 	virtual void OnTracePlayerActionPoint(const FHitResult& Res);
+
+	virtual void OnSelectActionObject(AActor* Actor);
+
+	virtual void OnDeselectActionObject(AActor* Actor);
+
+	//void SetRenderCustomDepth(AActor* Actor, bool RenderCustomDepth);
 
 public:
 

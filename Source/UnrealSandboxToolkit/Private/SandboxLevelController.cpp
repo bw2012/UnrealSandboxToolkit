@@ -78,10 +78,17 @@ void ASandboxLevelController::SaveLevelJson() {
 	}
 
 	JsonWriter->WriteArrayEnd();
+
+	SaveLevelJsonExt(JsonWriter);
+
 	JsonWriter->WriteObjectEnd();
 	JsonWriter->Close();
 
 	FFileHelper::SaveStringToFile(*JsonStr, *FullPath);
+}
+
+
+void ASandboxLevelController::SaveLevelJsonExt(TSharedRef <TJsonWriter<TCHAR>> JsonWriter) {
 }
 
 void ASandboxLevelController::LoadLevelJson() {
@@ -149,5 +156,21 @@ void ASandboxLevelController::LoadLevelJson() {
 				GetWorld()->SpawnActor(SpawnClass, &Transform);
 			}
 		}
+
+		LoadLevelJsonExt(JsonParsed);
 	}
+}
+
+void ASandboxLevelController::LoadLevelJsonExt(TSharedPtr<FJsonObject> JsonParsed) {
+
+}
+
+
+TSubclassOf<ASandboxObject> ASandboxLevelController::GetSandboxObjectByClassId(int32 ClassId) {
+
+	if (ObjectMap->ObjectMap.Contains(ClassId)) {
+		return ObjectMap->ObjectMap[ClassId];
+	}
+
+	return nullptr;
 }

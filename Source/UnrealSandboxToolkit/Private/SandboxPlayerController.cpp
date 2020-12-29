@@ -19,26 +19,16 @@ void ASandboxPlayerController::PlayerTick(float DeltaTime) {
 	Super::PlayerTick(DeltaTime);
 
 	// check mouse cursor
+	// TODO move inside from plugin
 	ASandboxCharacter* Character = Cast<ASandboxCharacter>(GetCharacter());
 	if (Character && !IsGameInputBlocked()) {
 		if (Character->GetSandboxPlayerView() == PlayerView::TOP_DOWN) {
-			bShowMouseCursor = true;
+			//bShowMouseCursor = true;
 		} else if (Character->GetSandboxPlayerView() == PlayerView::THIRD_PERSON) {
-			bShowMouseCursor = false;
+			//bShowMouseCursor = false;
 		}
 	} else {
-		bShowMouseCursor = true;
-	}
-
-	if (!IsGameInputBlocked()) {
-		FHitResult Res = TracePlayerActionPoint();
-		OnTracePlayerActionPoint(Res);
-		if (Res.bBlockingHit) {
-			AActor* SelectedActor = Res.Actor.Get();
-			if (SelectedActor) {
-				SelectActionObject(SelectedActor);
-			}
-		}
+		//bShowMouseCursor = true;
 	}
 
 	if (bMoveToMouseCursor)	{
@@ -223,19 +213,31 @@ void ASandboxPlayerController::OnPossess(APawn* aPawn) {
 			bShowMouseCursor = false;
 		}
 	}
-
 }
 
 void ASandboxPlayerController::BlockGameInput() {
 	//UWidgetBlueprintLibrary::SetInputMode_GameAndUI(this, nullptr, false, false);
 	bIsGameInputBlocked = true;
-	bShowMouseCursor = true;
+	//bShowMouseCursor = true;
 }
 
 void ASandboxPlayerController::UnblockGameInput() {
 	//UWidgetBlueprintLibrary::SetInputMode_GameOnly(this);
 	bIsGameInputBlocked = false;
-	bShowMouseCursor = false;
+	//bShowMouseCursor = false;
+}
+
+void ASandboxPlayerController::TraceAndSelectActionObject() {
+	if (!IsGameInputBlocked()) {
+		FHitResult Res = TracePlayerActionPoint();
+		OnTracePlayerActionPoint(Res);
+		if (Res.bBlockingHit) {
+			AActor* SelectedActor = Res.Actor.Get();
+			if (SelectedActor) {
+				SelectActionObject(SelectedActor);
+			}
+		}
+	}
 }
 
 FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
@@ -264,6 +266,7 @@ FHitResult ASandboxPlayerController::TracePlayerActionPoint() {
 		FCollisionQueryParams TraceParams(FName(TEXT("")), true, this);
 		//TraceParams.bTraceAsyncScene = true;
 		//TraceParams.bReturnPhysicalMaterial = false;
+
 		TraceParams.bTraceComplex = true;
 		TraceParams.bReturnFaceIndex = true;
 		TraceParams.AddIgnoredActor(Character);
@@ -292,21 +295,29 @@ void SetRenderCustomDepth(AActor* Actor, bool RenderCustomDepth) {
 	}
 }
 
+void ASandboxPlayerController::OnSelectActionObject(AActor* Actor) {
+	SetRenderCustomDepth(Actor, true);
+}
+
+void ASandboxPlayerController::OnDeselectActionObject(AActor* Actor) {
+	SetRenderCustomDepth(Actor, false);
+}
+
 void ASandboxPlayerController::SelectActionObject(AActor* Actor) {
 	ASandboxObject* Obj = Cast<ASandboxObject>(Actor);
 
 	if (SelectedObject != Obj) {
 		if (SelectedObject != nullptr && SelectedObject->IsValidLowLevel()) {
-			SetRenderCustomDepth(SelectedObject, false);
+			OnDeselectActionObject(SelectedObject);
 		}
 	}
 
 	if (Obj != nullptr) {
-		SetRenderCustomDepth(Obj, true);
+		OnSelectActionObject(Obj);
 		SelectedObject = Obj;
 	} else {
 		if (SelectedObject != nullptr && SelectedObject->IsValidLowLevel()) {
-			SetRenderCustomDepth(SelectedObject, false);
+			OnDeselectActionObject(SelectedObject);
 		}
 	}
 }
@@ -314,7 +325,7 @@ void ASandboxPlayerController::SelectActionObject(AActor* Actor) {
 UContainerComponent* ASandboxPlayerController::GetInventory() {
 	APawn* Pawn = GetPawn();
 
-	if (Pawn != nullptr) {
+	if (Pawn) {
 		TArray<UContainerComponent*> Components;
 		Pawn->GetComponents<UContainerComponent>(Components);
 
@@ -411,7 +422,7 @@ bool ASandboxPlayerController::OpenObjectWithContainer() {
 			Obj->GetComponents<UContainerComponent>(Components);
 
 			for (UContainerComponent* Container : Components) {
-				if (Container->GetName().Equals(TEXT("ObjectContainer"))) {
+				if (Container->GetName() == "ObjectContainer") {
 					this->OpenedObject = Obj;
 					this->OpenedContainer = Container;
 					return true;
@@ -428,11 +439,9 @@ void ASandboxPlayerController::CloseObjectWithContainer() {
 	this->OpenedContainer = nullptr;
 }
 
-
 void ASandboxPlayerController::OnTracePlayerActionPoint(const FHitResult& Res) {
 
 }
-
 
 bool ASandboxPlayerController::IsGameInputBlocked() {
 	ASandboxCharacter* Character = Cast<ASandboxCharacter>(GetCharacter());

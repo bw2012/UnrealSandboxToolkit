@@ -38,6 +38,7 @@ ASandboxCharacter::ASandboxCharacter() {
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	MaxZoom = 500;
+	MaxZoomTopDown = 1200;
 	MinZoom = 100;
 	ZoomStep = 50;
 
@@ -172,7 +173,9 @@ void ASandboxCharacter::ZoomIn() {
 	if (GetCameraBoom()->TargetArmLength > MinZoom) {
 		GetCameraBoom()->TargetArmLength -= ZoomStep;
 	} else {
-		InitFirstPersonView();
+		if (bEnableAutoSwitchView) {
+			InitFirstPersonView();
+		}
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("ZoomIn: %f"), GetCameraBoom()->TargetArmLength);
@@ -187,15 +190,27 @@ void ASandboxCharacter::ZoomOut() {
 	if (GetCameraBoom() == NULL) return;
 
 	if (CurrentPlayerView == PlayerView::FIRST_PERSON) {
-		InitThirdPersonView();
-		return;
+		if (bEnableAutoSwitchView) {
+			InitThirdPersonView();
+			return;
+		}
 	};
 
-	if (GetCameraBoom()->TargetArmLength < MaxZoom) {
+	float MZ = (CurrentPlayerView == PlayerView::TOP_DOWN) ? MaxZoomTopDown : MaxZoom;
+
+	if (GetCameraBoom()->TargetArmLength < MZ) {
 		GetCameraBoom()->TargetArmLength += ZoomStep;
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("ZoomOut: %f"), GetCameraBoom()->TargetArmLength);
+}
+
+FVector ASandboxCharacter::GetThirdPersonViewCameraPos() {
+	return FVector(0, 0, 64);
+}
+
+FRotator ASandboxCharacter::GetTopDownViewCameraRot() {
+	return FRotator(-50.f, 0.f, 0.f); //FRotator(-60.f, 0.f, 0.f)
 }
 
 void ASandboxCharacter::InitTopDownView() {
@@ -208,8 +223,8 @@ void ASandboxCharacter::InitTopDownView() {
 
 	CameraBoom->SetUsingAbsoluteRotation(true); // Don't want arm to rotate when character does
 
-	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
-	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->SetRelativeRotation(GetTopDownViewCameraRot());
+	CameraBoom->TargetArmLength = MaxZoomTopDown;
 	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
 	CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
 	CameraBoom->ProbeSize = 0;
@@ -225,7 +240,7 @@ void ASandboxCharacter::InitTopDownView() {
 	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
 	if (Controller != NULL) {
 		Controller->ShowMouseCursor(true);
-		Controller->OpenCrosshairWidget();
+		Controller->CloseCrosshairWidget();
 	}
 }
 
@@ -240,7 +255,7 @@ void ASandboxCharacter::InitThirdPersonView() {
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	CameraBoom->bDoCollisionTest = true;
 	CameraBoom->ProbeSize = 12;
-	CameraBoom->SetRelativeLocation(FVector(0, 0, 64));
+	CameraBoom->SetRelativeLocation(GetThirdPersonViewCameraPos());
 
 	FirstPersonCamera->Deactivate();
 	FollowCamera->Activate();
@@ -285,12 +300,12 @@ void ASandboxCharacter::InitFirstPersonView() {
 
 void ASandboxCharacter::AddControllerYawInput(float Val) {
 	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
-	if (!Controller || Controller->IsGameInputBlocked()) { 
+	if (!Controller) { 
 		return;
 	}
 
-	if (Controller->IsGameInputBlocked()) {
-		return;
+	if (Controller->IsGameInputBlocked() && CurrentPlayerView != PlayerView::THIRD_PERSON) {
+		//return;
 	}
 
 	if (CurrentPlayerView == PlayerView::TOP_DOWN) {
@@ -303,8 +318,12 @@ void ASandboxCharacter::AddControllerYawInput(float Val) {
 
 void ASandboxCharacter::AddControllerPitchInput(float Val) {
 	ASandboxPlayerController* Controller = Cast<ASandboxPlayerController>(GetController());
-	if (!Controller || Controller->IsGameInputBlocked()) {
+	if (!Controller) {
 		return;
+	}
+
+	if (Controller->IsGameInputBlocked() && CurrentPlayerView != PlayerView::THIRD_PERSON) {
+		//return;
 	}
 
 	if (CurrentPlayerView == PlayerView::TOP_DOWN){

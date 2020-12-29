@@ -8,10 +8,9 @@
 
 ASandboxEnvironment::ASandboxEnvironment() {
 	PrimaryActorTick.bCanEverTick = true;
-	TimeScale = 1.f;
 	TimeSpeed = 10.f;
-	MaxSkyLigthIntensity = 1.0;
-	NightSkyLigthIntensity = 0.01;
+	MaxDaySkyLigthIntensity = 1.0;
+	MinNightSkyLigthIntensity = 0.01;
 	LastSkyIntensity = 0;
 	RecaptureSkyTreshold = 0.5f;
 	bEnableDayNightCycle = true;
@@ -27,13 +26,21 @@ ASandboxEnvironment::ASandboxEnvironment() {
 void ASandboxEnvironment::BeginPlay() {
 	Super::BeginPlay();
 
-	if (DirectionalLightSource != NULL && SkySphere != NULL){
+	if (DirectionalLightSource){
 		DirectionalLightSource->SetActorRotation(FRotator(-90.0f, 0.0f, 0.0f));
 	}
 
 	if (CaveSphere) {
 		CaveSphere->GetStaticMeshComponent()->SetVisibility(bCaveMode);
 	}
+
+	if (GlobalFog) {
+		UExponentialHeightFogComponent* FogCmoponent = GlobalFog->GetComponent();
+		FogMaxOpacity = FogCmoponent->FogMaxOpacity;
+		FogMaxDensity = FogCmoponent->FogDensity;
+	}
+
+	MaxSkyLigthIntensity = MaxDaySkyLigthIntensity;
 }
 
 void ASandboxEnvironment::Tick( float DeltaTime ) {
@@ -47,8 +54,9 @@ void ASandboxEnvironment::Tick( float DeltaTime ) {
 void SetSkyLightIntensity(ASkyLight* SkyLight, float Intensity) {
 	if (SkyLight) {
 		USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
-		if (SkyLightComponent != NULL) {
+		if (SkyLightComponent) {
 			SkyLightComponent->Intensity = Intensity;
+			SkyLightComponent->RecaptureSky();
 		}
 	}
 }
@@ -57,22 +65,24 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 	UWorld* World = GetWorld();
 	AGameStateBase* GameState = World->GetGameState();
 
-	if (GameState == NULL) {
+	if (!GameState) {
 		return;
 	}
 
-	SandboxGameTime GameTimeOfDay = ClcGameTimeOfDay(GameState->GetServerWorldTimeSeconds(), false); // use UTC time
+	float RealServerTime = GameState->GetServerWorldTimeSeconds();
+	SandboxGameTime GameDayTime = ClcGameTimeOfDay(RealServerTime, false); // use UTC time
 
-	//sUE_LOG(LogTemp, Warning, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), RealServerTime);
+	//UE_LOG(LogTemp, Warning, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
 
 	cTime Time;
-	Time.iYear = InitialYear;
-	Time.iMonth = InitialMonth;
-	Time.iDay = InitialDay;
+	Time.iYear = GameDayTime.year;
+	Time.iMonth = GameDayTime.month;
+	Time.iDay = GameDayTime.days;
 
-	Time.dHours = GameTimeOfDay.hours;
-	Time.dMinutes = GameTimeOfDay.minutes;
-	Time.dSeconds = GameTimeOfDay.seconds;
+	Time.dHours = GameDayTime.hours;
+	Time.dMinutes = GameDayTime.minutes;
+	Time.dSeconds = GameDayTime.seconds;
 
 	cLocation GeoLoc;
 	GeoLoc.dLongitude = Lng;
@@ -82,66 +92,48 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 
 	sunpos(Time, GeoLoc, &SunPosition);
 
-	if (DirectionalLightSource != NULL) {
+	if (DirectionalLightSource) {
 		DirectionalLightSource->SetActorRotation(FRotator(-(90 - SunPosition.dZenithAngle), SunPosition.dAzimuth, 0.0f));
 
-		if (SkySphere != NULL) {
-			FOutputDeviceNull Ar;
-			SkySphere->CallFunctionByNameWithArguments(TEXT("UpdateSunDirection"), Ar, NULL, true);
+		if (SkyLight) {
+			float H = 1 - SunPosition.dZenithAngle / 180;
+			bIsNight = H < 0.5;
+			float Temp = H;
 
-			UFloatProperty* SunHeightFloatProp = FindField<UFloatProperty>(SkySphere->GetClass(), TEXT("Sun Height"));
-			if (SunHeightFloatProp != NULL) {
-				float SunHeight = SunHeightFloatProp->GetPropertyValue_InContainer(SkySphere);
-
-				if (LastSunHeight < 0) {
-					LastSunHeight = SunHeight;
-				}
-
-				ULightComponent* LightComponent = DirectionalLightSource->GetLightComponent();
-				if (LightComponent != NULL) {
-					if (SunHeight > 0.01) { //0.08 if mobile (2.75)
-						LightComponent->SetIntensity(1.75 + 2 * SunHeight);
-					} else {
-						LightComponent->SetIntensity(0);
-					}
-				}
-
-				if (SkyLight != NULL) {
-					// set sky light intensity
-					USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
-					if (SkyLightComponent != NULL) {
-						if (SunHeight > 0) {
-							SkyLightComponent->Intensity = 0.04 + MaxSkyLigthIntensity * SunHeight;
-						} else {
-							SkyLightComponent->Intensity = NightSkyLigthIntensity; //night
-						}
-
-						if (FMath::Abs(SkyLightComponent->Intensity - LastSkyIntensity) > RecaptureSkyTreshold) {
-							SkyLightComponent->RecaptureSky();
-							LastSkyIntensity = SkyLightComponent->Intensity;
-						}
-
-						if ((LastSunHeight > 0 && SunHeight < 0) || (LastSunHeight < 0 && SunHeight > 0)) {
-							SkyLightComponent->RecaptureSky();
-						}
-					}
-				}
-
-				LastSunHeight = SunHeight;
+			if (Temp < 0.5f) {
+				Temp /= 3;
 			}
-		} else {
-			if (SkyLight != NULL) {
-				USkyLightComponent* SkyLightComponent = SkyLight->GetLightComponent();
-				if (SkyLightComponent != NULL) {
-					SkyLightComponent->RecaptureSky();
+
+			//UE_LOG(LogTemp, Log, TEXT("dZenithAngle -> %f %f"), SunPosition.dZenithAngle, Temp);
+
+			float Intensity = MinNightSkyLigthIntensity + Temp * MaxSkyLigthIntensity;
+			SetSkyLightIntensity(SkyLight, Intensity);
+
+			if (GlobalFog) {
+				UExponentialHeightFogComponent* FogCmoponent = GlobalFog->GetComponent();
+				float FogOpacity = FogMaxOpacity * Temp;
+
+				if (GlobalFogDensityCurve) {
+					float K = GlobalFogDensityCurve->GetFloatValue(H - 0.5);
+					FogCmoponent->SetFogDensity(FogMaxDensity * K);
+				} else {
+					FogCmoponent->SetFogDensity(FogMaxDensity * Temp);
+				}
+
+				if (GlobalFogOpacityCurve) {
+					float K = GlobalFogOpacityCurve->GetFloatValue(H - 0.5);
+					FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * K);
+				} else {
+					FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * Temp);
 				}
 			}
+
 		}
 	}
 }
 
 float ASandboxEnvironment::ClcGameTime(float RealServerTime) {
-	return ((RealServerTime)* TimeSpeed) + TimeOffset;
+	return (RealServerTime + RealTimeOffset) * TimeSpeed;
 }
 
 SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
@@ -162,9 +154,21 @@ SandboxGameTime ASandboxEnvironment::ClcLocalGameTime(float RealServerTime) {
 }
 
 SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool bAccordingTimeZone) {
-	static const long InitialOffset = 60 * 60 * 12; // always start game at 12:00
-	long TimezoneOffset = bAccordingTimeZone ? 60 * 60 * TimeZone : 0;
-	long input_seconds = (int)(ClcGameTime(RealServerTime) + InitialOffset + TimezoneOffset);
+	std::tm initial_ptm {};
+	initial_ptm.tm_hour = 12;
+	initial_ptm.tm_min = 0;
+	initial_ptm.tm_sec = 0;
+	initial_ptm.tm_mon = InitialMonth + 1;
+	initial_ptm.tm_mday = InitialDay;
+	initial_ptm.tm_year = InitialYear - 1900;
+
+	time_t initial_time = std::mktime(&initial_ptm);
+
+	//static const uint64 InitialOffset = 60 * 60 * 12; // always start game at 12:00
+	const uint64 InitialOffset = initial_time;
+	const uint64 TimezoneOffset = bAccordingTimeZone ? 60 * 60 * TimeZone : 0;
+	const uint64 input_seconds = (int)ClcGameTime(RealServerTime) + InitialOffset + TimezoneOffset;
+
 	time_t rawtime = (time_t)input_seconds;
 	tm ptm;
 
@@ -178,11 +182,26 @@ SandboxGameTime ASandboxEnvironment::ClcGameTimeOfDay(float RealServerTime, bool
 	Time.hours = ptm.tm_hour;
 	Time.minutes = ptm.tm_min;
 	Time.seconds = ptm.tm_sec;
+	Time.days = ptm.tm_mday;
+	Time.month = ptm.tm_mon + 1;
+	Time.year = ptm.tm_year + 1900;
+
 	return Time;
 }
 
-void ASandboxEnvironment::SandboxSetTimeOffset(float Offset) {
-	TimeOffset = Offset;
+void ASandboxEnvironment::SetTimeOffset(float Offset) {
+	RealTimeOffset = Offset;
+}
+
+double ASandboxEnvironment::GetNewTimeOffset() {
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+
+	if (!GameState) {
+		return RealTimeOffset;
+	}
+
+	float RealServerTime = GameState->GetServerWorldTimeSeconds();
+	return RealTimeOffset + RealServerTime;
 }
 
 void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
@@ -191,16 +210,20 @@ void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 	}
 
 	if (Pos.Z < ThresholdEndLightFalloff) {
-		SetSkyLightIntensity(SkyLight, MinCaveSkyLightIntensity);
+		//SetSkyLightIntensity(SkyLight, MinCaveSkyLightIntensity);
+		//MaxSkyLigthIntensity = MinCaveSkyLightIntensity;
 	} else if (Pos.Z < ThresholdStartLightFalloff) {
 		float H = ThresholdStartLightFalloff - Pos.Z;
 		float IntensityStep = (1 - MinCaveSkyLightIntensity) / (ThresholdStartLightFalloff - ThresholdEndLightFalloff);
 		float Intensity = 1 - H * IntensityStep;
 		//UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
-		SetSkyLightIntensity(SkyLight, Intensity);
+		//SetSkyLightIntensity(SkyLight, Intensity);
+		//MaxSkyLigthIntensity = Intensity;
 	} else {
-		SetSkyLightIntensity(SkyLight, 1.f);
+		//MaxSkyLigthIntensity = MaxDaySkyLigthIntensity;
 	}
+
+	//PerformDayNightCycle();
 
 	if (AmbientSound) {
 		float Value = 0;
@@ -230,3 +253,6 @@ void ASandboxEnvironment::SetCaveMode(bool bCaveModeEnabled) {
 	bCaveMode = bCaveModeEnabled;
 }
 
+bool ASandboxEnvironment::IsNight() const {
+	return bIsNight;
+}
