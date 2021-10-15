@@ -91,8 +91,8 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 	float RealServerTime = GameState->GetServerWorldTimeSeconds();
 	SandboxGameTime GameDayTime = ClcGameTimeOfDay(RealServerTime, false); // use UTC time
 
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), RealServerTime);
-	//UE_LOG(LogTemp, Warning, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
+	//UE_LOG(LogSandboxTerrain, Log, TEXT("%f"), RealServerTime);
+	//UE_LOG(LogSandboxTerrain, Log, TEXT("%d : %d"), GameTimeOfDay.hours, GameTimeOfDay.minutes);
 
 	cTime Time;
 	Time.iYear = GameDayTime.year;
@@ -132,7 +132,7 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 				Temp /= 3;
 			}
 
-			//UE_LOG(LogTemp, Log, TEXT("dZenithAngle -> %f %f"), SunPosition.dZenithAngle, Temp);
+			//UE_LOG(LogSandboxTerrain, Log, TEXT("dZenithAngle -> %f %f"), SunPosition.dZenithAngle, Temp);
 			float Intensity = MinNightSkyLigthIntensity + Temp * MaxSkyLigthIntensity;
 			SetSkyLightIntensity(SkyLight, Intensity);
 
@@ -238,19 +238,21 @@ void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 		CaveSphere->SetActorLocation(Pos);
 	}
 
+	/*
 	if (Pos.Z < ThresholdEndLightFalloff) {
 		MaxSkyLigthIntensity = MinCaveSkyLightIntensity;
+		UE_LOG(LogTemp, Log, TEXT("MinCaveSkyLightIntensity -> %f"), MinCaveSkyLightIntensity);
 	} else if (Pos.Z < ThresholdStartLightFalloff) {
 		float H = ThresholdStartLightFalloff - Pos.Z;
 		float IntensityStep = (1 - MinCaveSkyLightIntensity) / (ThresholdStartLightFalloff - ThresholdEndLightFalloff);
-		float Intensity = 1 - H * IntensityStep;
-		UE_LOG(LogTemp, Log, TEXT("Intensity -> %f %f"), H, Intensity);
+		float Intensity = MaxSkyLigthIntensity - H * IntensityStep;
+
+		UE_LOG(LogTemp, Log, TEXT("MaxSkyLigthIntensity -> %f %f"), H, Intensity);
 		MaxSkyLigthIntensity = Intensity;
 	} else {
 		MaxSkyLigthIntensity = MaxDaySkyLigthIntensity;
 	}
-
-	//PerformDayNightCycle();
+	*/
 
 	if (AmbientSound) {
 		float Value = 0;

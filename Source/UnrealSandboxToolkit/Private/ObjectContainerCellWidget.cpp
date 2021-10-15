@@ -103,11 +103,11 @@ UTexture2D* USandboxObjectContainerCellWidget::GetSlotTexture(int32 SlotId) {
 }
 
 void USandboxObjectContainerCellWidget::SelectSlot(int32 SlotId) {
-	UE_LOG(LogTemp, Warning, TEXT("SelectSlot: %d"), SlotId);
+	UE_LOG(LogTemp, Log, TEXT("SelectSlot: %d"), SlotId);
 }
 
 bool USandboxObjectContainerCellWidget::SlotDrop(int32 SlotDropId, int32 SlotTargetId, AActor* SourceActor, UContainerComponent* SourceContainer) {
-	UE_LOG(LogTemp, Warning, TEXT("UI cell drop: drop id -> %d ---> target id -> %d"), SlotDropId, SlotTargetId);
+	UE_LOG(LogTemp, Log, TEXT("UI cell drop: drop id -> %d ---> target id -> %d"), SlotDropId, SlotTargetId);
 
 	if (ContainerId == 0 && SourceActor == nullptr) { // internal transfer
 		UContainerComponent* Container = GetContainer();

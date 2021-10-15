@@ -23,14 +23,14 @@ void ASandboxLevelController::Tick(float DeltaTime) {
 }
 
 void ASandboxLevelController::SaveLevelJson() {
-	UE_LOG(LogTemp, Warning, TEXT("----------- save level json -----------"));
+	UE_LOG(LogTemp, Log, TEXT("----------- save level json -----------"));
 
 	FString JsonStr;
 	FString FileName = TEXT("level.json");
 	FString SavePath = FPaths::ProjectSavedDir();
 	FString FullPath = SavePath + TEXT("/Map/") + MapName + TEXT("/") + FileName;
 
-	//UE_LOG(LogTemp, Warning, TEXT("level json path -> %s"), *FullPath);
+	//UE_LOG(LogSandboxTerrain, Log, TEXT("level json path -> %s"), *FullPath);
 
 	TSharedRef <TJsonWriter<TCHAR>> JsonWriter = TJsonWriterFactory<>::Create(&JsonStr);
 	JsonWriter->WriteObjectStart();
@@ -102,12 +102,12 @@ void ASandboxLevelController::LoadLevelJson() {
 		TSubclassOf<ASandboxObject> SandboxObject = Elem.Value;
 		if (SandboxObject) {
 			FString ClassName = SandboxObject->ClassDefaultObject->GetClass()->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("ClassName -> %s"), *ClassName);
+			UE_LOG(LogTemp, Log, TEXT("ClassName -> %s"), *ClassName);
 			ObjectMapByClassName.Add(ClassName, SandboxObject);
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("----------- load level json -----------"));
+	UE_LOG(LogTemp, Log, TEXT("----------- load level json -----------"));
 
 	FString FileName = TEXT("level.json");
 	FString SavePath = FPaths::ProjectSavedDir();
@@ -146,7 +146,7 @@ void ASandboxLevelController::LoadLevelJson() {
 			Scale.Y = ScaleValArray[1]->AsNumber();
 			Scale.Z = ScaleValArray[2]->AsNumber();
 
-			//UE_LOG(LogTemp, Warning, TEXT("Location: %f %f %f"), Location.X, Location.Y, Location.Z);
+			//UE_LOG(LogSandboxTerrain, Log, TEXT("Location: %f %f %f"), Location.X, Location.Y, Location.Z);
 
 			// get object actor
 			if (ObjectMapByClassName.Contains(ClassName)) {
@@ -167,7 +167,6 @@ void ASandboxLevelController::LoadLevelJsonExt(TSharedPtr<FJsonObject> JsonParse
 
 
 TSubclassOf<ASandboxObject> ASandboxLevelController::GetSandboxObjectByClassId(int32 ClassId) {
-
 	if (ObjectMap->ObjectMap.Contains(ClassId)) {
 		return ObjectMap->ObjectMap[ClassId];
 	}

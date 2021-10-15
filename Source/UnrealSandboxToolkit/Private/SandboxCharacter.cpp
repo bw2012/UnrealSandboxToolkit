@@ -178,7 +178,7 @@ void ASandboxCharacter::ZoomIn() {
 		}
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("ZoomIn: %f"), GetCameraBoom()->TargetArmLength);
+	//UE_LOG(LogSandboxTerrain, Log, TEXT("ZoomIn: %f"), GetCameraBoom()->TargetArmLength);
 }
 
 void ASandboxCharacter::ZoomOut() {
@@ -202,7 +202,7 @@ void ASandboxCharacter::ZoomOut() {
 		GetCameraBoom()->TargetArmLength += ZoomStep;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("ZoomOut: %f"), GetCameraBoom()->TargetArmLength);
+	//UE_LOG(LogSandboxTerrain, Log, TEXT("ZoomOut: %f"), GetCameraBoom()->TargetArmLength);
 }
 
 FVector ASandboxCharacter::GetThirdPersonViewCameraPos() {
@@ -463,7 +463,7 @@ void ASandboxCharacter::LiveUp() {
 
 void ASandboxCharacter::OnHit(class UPrimitiveComponent* HitComp, class AActor* Actor, class UPrimitiveComponent* Other, FVector Impulse, const FHitResult & HitResult) {
 	float HitVelocity = GetCapsuleComponent()->GetComponentVelocity().Size();
-	//UE_LOG(LogTemp, Warning, TEXT("HitVelocity -> %f"), HitVelocity);
+	//UE_LOG(LogSandboxTerrain, Log, TEXT("HitVelocity -> %f"), HitVelocity);
 	if (VitalSystemComponent != nullptr) {
 		const static float HitVelocityThreshold = 1300;
 		if (HitVelocity > HitVelocityThreshold) {
