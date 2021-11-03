@@ -65,6 +65,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
 	float MinCaveSkyLightIntensity;
 
+	UPROPERTY(EditAnywhere, Category = "Sandbox")
+	UCurveFloat* CaveSkyLightIntensityCurve;
+
 	UPROPERTY(EditAnywhere, Category = "Sandbox Cave")
 	float ThresholdStartLightFalloff;
 

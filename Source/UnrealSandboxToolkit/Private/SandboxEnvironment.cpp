@@ -144,16 +144,14 @@ void ASandboxEnvironment::PerformDayNightCycle() {
 				if (GlobalFogDensityCurve) {
 					float K = GlobalFogDensityCurve->GetFloatValue(H - 0.5);
 					FogCmoponent->SetFogDensity(FogMaxDensity * K);
-				}
-				else {
+				} else {
 					FogCmoponent->SetFogDensity(FogMaxDensity * Temp);
 				}
 
 				if (GlobalFogOpacityCurve) {
 					float K = GlobalFogOpacityCurve->GetFloatValue(H - 0.5);
 					FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * K);
-				}
-				else {
+				} else {
 					FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * Temp);
 				}
 			}
@@ -236,6 +234,17 @@ double ASandboxEnvironment::GetNewTimeOffset() {
 void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 	if (bCaveMode) {
 		CaveSphere->SetActorLocation(Pos);
+	}
+
+	const float Zc = Pos.Z / 100;
+
+	if (CaveSkyLightIntensityCurve) {
+		float K = CaveSkyLightIntensityCurve->GetFloatValue(Zc);
+		UE_LOG(LogTemp, Log, TEXT("TEST -> %f - %f"), Zc, K);
+
+		//FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * K);
+	} else {
+		//FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * Temp);
 	}
 
 	/*
