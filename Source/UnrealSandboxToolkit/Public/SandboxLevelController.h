@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Toolkit")
 	USandboxObjectMap* ObjectMap;
 
+	UPROPERTY(EditAnywhere, Category = "UnrealSandbox Toolkit")
+	bool bSaveOnEndPlay;
+
 	TSubclassOf<ASandboxObject> GetSandboxObjectByClassId(int32 ClassId);
 
 protected:

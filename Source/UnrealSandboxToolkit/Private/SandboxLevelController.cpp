@@ -6,6 +6,7 @@
 
 ASandboxLevelController::ASandboxLevelController() {
 	MapName = TEXT("World 0");
+	bSaveOnEndPlay = true;
 }
 
 void ASandboxLevelController::BeginPlay() {
@@ -15,7 +16,10 @@ void ASandboxLevelController::BeginPlay() {
 
 void ASandboxLevelController::EndPlay(const EEndPlayReason::Type EndPlayReason) {
 	Super::EndPlay(EndPlayReason);
-	SaveLevelJson();
+
+	if (bSaveOnEndPlay) {
+		SaveLevelJson();
+	}
 }
 
 void ASandboxLevelController::Tick(float DeltaTime) {

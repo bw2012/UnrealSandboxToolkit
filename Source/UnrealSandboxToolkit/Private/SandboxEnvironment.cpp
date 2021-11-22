@@ -240,7 +240,7 @@ void ASandboxEnvironment::UpdatePlayerPosition(FVector Pos, float GroundLevel) {
 
 	if (CaveSkyLightIntensityCurve) {
 		float K = CaveSkyLightIntensityCurve->GetFloatValue(Zc);
-		UE_LOG(LogTemp, Log, TEXT("TEST -> %f - %f"), Zc, K);
+		//UE_LOG(LogTemp, Log, TEXT("TEST -> %f - %f"), Zc, K);
 
 		//FogCmoponent->SetFogMaxOpacity(FogMaxOpacity * K);
 	} else {
